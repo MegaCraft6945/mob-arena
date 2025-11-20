@@ -39,14 +39,11 @@ public class PlayerInteractListener implements Listener {
             return;
         }
 
-        // Check if player clicked emerald to open upgrade shop
+        // Check if player clicked emerald to open upgrade shop anytime
         if (item.getType() == Material.EMERALD) {
-            GameState state = game.getState();
-            if (state == GameState.ACTIVE || state == GameState.UPGRADE_SHOP) {
-                event.setCancelled(true);
-                plugin.getGameManager().openUpgradeShop(player, game);
-                return;
-            }
+            event.setCancelled(true);
+            plugin.getGameManager().openUpgradeShop(player, game);
+            return;
         }
 
         if (!item.hasItemMeta()) return;

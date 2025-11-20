@@ -348,11 +348,8 @@ public class GameManager {
     }
 
     public void openUpgradeShop(Player player, Game game) {
-        if (game.getState() == GameState.UPGRADE_SHOP) {
-            upgradeShopGUI.openShop(player, game);
-        } else {
-            player.sendMessage("§cThe upgrade shop is not currently open!");
-        }
+        // Allow opening shop anytime during the game
+        upgradeShopGUI.openShop(player, game);
     }
 
     private void winGame(Game game) {
