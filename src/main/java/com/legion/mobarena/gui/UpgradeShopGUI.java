@@ -132,7 +132,7 @@ public class UpgradeShopGUI {
     private ItemStack createBowUpgradeItem(int currentLevel) {
         if (currentLevel >= 5) {
             ItemStack item = new ItemStack(Material.BOW);
-            item.addUnsafeEnchantment(Enchantment.POWER, 5);
+            item.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, 5);
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName("§aBow §7(§aMAX§7)");
             meta.setLore(Arrays.asList("§7Current: §ePower V", "", "§a§lMAX LEVEL"));
@@ -145,7 +145,7 @@ public class UpgradeShopGUI {
 
         ItemStack item = new ItemStack(Material.BOW);
         if (currentLevel > 0) {
-            item.addUnsafeEnchantment(Enchantment.POWER, currentLevel);
+            item.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, currentLevel);
         }
 
         ItemMeta meta = item.getItemMeta();
@@ -301,7 +301,7 @@ public class UpgradeShopGUI {
 
         // Give upgraded bow
         ItemStack bow = new ItemStack(Material.BOW);
-        bow.addUnsafeEnchantment(Enchantment.POWER, nextLevel);
+        bow.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, nextLevel);
         player.getInventory().addItem(bow);
 
         player.sendMessage(plugin.getConfig().getString("messages.purchased").replace("{item}", "Bow Upgrade"));

@@ -69,7 +69,7 @@ public class KitManager {
                 },
                 Arrays.asList(
                         new ItemStack(Material.WOODEN_SWORD),
-                        Kit.createEnchantedItem(Material.BOW, 1, Enchantment.POWER, 1),
+                        Kit.createEnchantedItem(Material.BOW, 1, Enchantment.ARROW_DAMAGE, 1),
                         new ItemStack(Material.ARROW, 32)
                 ),
                 "Arrow Storm",

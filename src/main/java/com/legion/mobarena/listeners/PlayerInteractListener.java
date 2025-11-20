@@ -68,7 +68,7 @@ public class PlayerInteractListener implements Listener {
     private void handleBruteRush(Player player, ItemStack item) {
         if (item.getAmount() <= 0) return;
 
-        player.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, 100, 1)); // 5 seconds
+        player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 100, 1)); // 5 seconds
         player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1f, 1.5f);
         player.sendMessage("§6§lBrute Rush activated!");
 
@@ -100,7 +100,7 @@ public class PlayerInteractListener implements Listener {
     private void handleIronSkin(Player player, ItemStack item) {
         if (item.getAmount() <= 0) return;
 
-        player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 160, 1)); // 8 seconds
+        player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 160, 1)); // 8 seconds
         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1f, 2f);
         player.sendMessage("§6§lIron Skin activated!");
 
@@ -130,7 +130,7 @@ public class PlayerInteractListener implements Listener {
             }
         }
 
-        player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION_HUGE, 1);
+        player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION_LARGE, 1);
         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1f, 0.8f);
         player.sendMessage("§6§lGround Slam activated!");
 
@@ -169,7 +169,7 @@ public class PlayerInteractListener implements Listener {
     private void handleRage(Player player, ItemStack item) {
         if (item.getAmount() <= 0) return;
 
-        player.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, 200, 2)); // 10 seconds, Strength III
+        player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 200, 2)); // 10 seconds, Strength III
         player.playSound(player.getLocation(), Sound.ENTITY_RAVAGER_ROAR, 1f, 1f);
         player.sendMessage("§6§lRage activated!");
 
