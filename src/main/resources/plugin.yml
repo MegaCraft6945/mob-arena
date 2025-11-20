@@ -1,0 +1,26 @@
+name: LegionMobArena
+version: '${project.version}'
+main: com.legion.mobarena.LegionMobArena
+api-version: '1.20'
+author: Legion
+description: A comprehensive Mob Arena plugin for Minecraft
+website: https://github.com/MegaCraft6945/mob-arena
+
+commands:
+  legion:
+    description: Main command for Legion Mob Arena
+    usage: /<command>
+    aliases: [la, mobarena, ma]
+  legionadmin:
+    description: Admin command for managing arenas
+    usage: /<command>
+    permission: legion.admin
+    aliases: [lma, legiona]
+
+permissions:
+  legion.admin:
+    description: Allows access to admin commands
+    default: op
+  legion.play:
+    description: Allows players to join arenas
+    default: true

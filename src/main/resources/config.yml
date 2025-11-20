@@ -1,0 +1,81 @@
+# Legion Mob Arena Configuration
+
+# Database settings
+database:
+  enabled: true
+  host: localhost
+  port: 3306
+  database: legion_mobarena
+  username: root
+  password: password
+
+# Game settings
+game:
+  max-rounds: 50
+  min-players: 1
+  max-players: 8
+  countdown-seconds: 10
+
+# Round settings (Round 1 template)
+rounds:
+  round-1:
+    mobs: 18
+    gems-reward: 5
+  # Progression formula: mobs increase by 2 each round, gems increase by 1 every 5 rounds
+  mob-increase-per-round: 2
+  gem-increase-every-rounds: 5
+
+# Economy settings
+economy:
+  gold-per-mob: 1
+  starting-gold: 0
+
+# Upgrade shop prices
+shop:
+  helmet:
+    base-price: 6
+    price-increase: 6
+  chestplate:
+    base-price: 10
+    price-increase: 10
+  leggings:
+    base-price: 8
+    price-increase: 8
+  boots:
+    base-price: 6
+    price-increase: 6
+  sword:
+    base-price: 15
+    price-increase: 15
+  bow:
+    base-price: 10
+    price-increase: 10
+  arrows:
+    price: 5
+    amount: 16
+  cake:
+    price: 40
+  golden-apple:
+    price: 10
+
+# Spawn settings
+spawn:
+  lobby-world: world
+  lobby-x: 0
+  lobby-y: 64
+  lobby-z: 0
+  lobby-yaw: 0
+  lobby-pitch: 0
+
+# Messages
+messages:
+  prefix: "&7[&eLegion&7] &r"
+  round-complete: "&aRound #{round} Complete! +{gems} Gems"
+  game-won: "&6&lCongratulations! You've completed all 50 rounds!"
+  game-lost: "&cGame Over! You were defeated on Round #{round}"
+  not-enough-gold: "&cYou don't have enough gold!"
+  purchased: "&aYou purchased {item}!"
+  arena-protected: "&cYou cannot break blocks in the arena!"
+  kit-purchased: "&aYou unlocked the {kit} kit!"
+  kit-selected: "&aYou selected the {kit} kit!"
+  not-enough-gems: "&cYou don't have enough gems!"

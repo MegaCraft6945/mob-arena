@@ -1,0 +1,165 @@
+package com.legion.mobarena.handlers;
+
+import com.legion.mobarena.LegionMobArena;
+import com.legion.mobarena.models.PlayerData;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+public class PlayerDataManager {
+
+    private final LegionMobArena plugin;
+    private final Map<UUID, PlayerData> playerDataCache;
+
+    public PlayerDataManager(LegionMobArena plugin) {
+        this.plugin = plugin;
+        this.playerDataCache = new HashMap<>();
+    }
+
+    public PlayerData getPlayerData(UUID uuid) {
+        return playerDataCache.get(uuid);
+    }
+
+    public void loadPlayerData(Player player) {
+        UUID uuid = player.getUniqueId();
+
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try {
+                Connection conn = plugin.getDatabaseManager().getConnection();
+                if (conn == null) return;
+
+                // Load player data
+                PreparedStatement ps = conn.prepareStatement(
+                        "SELECT * FROM player_data WHERE uuid = ?"
+                );
+                ps.setString(1, uuid.toString());
+                ResultSet rs = ps.executeQuery();
+
+                PlayerData data;
+                if (rs.next()) {
+                    data = new PlayerData(uuid, player.getName());
+                    data.setGems(rs.getInt("gems"));
+                    data.setTotalKills(rs.getInt("total_kills"));
+                    data.setTotalDeaths(rs.getInt("total_deaths"));
+                    data.setHighestRound(rs.getInt("highest_round"));
+                    data.setGamesPlayed(rs.getInt("games_played"));
+                    data.setGamesWon(rs.getInt("games_won"));
+                    data.setLastSeen(rs.getLong("last_seen"));
+                } else {
+                    data = new PlayerData(uuid, player.getName());
+                    // Insert new player
+                    ps = conn.prepareStatement(
+                            "INSERT INTO player_data (uuid, name, gems, total_kills, total_deaths, " +
+                                    "highest_round, games_played, games_won, last_seen) " +
+                                    "VALUES (?, ?, 0, 0, 0, 0, 0, 0, ?)"
+                    );
+                    ps.setString(1, uuid.toString());
+                    ps.setString(2, player.getName());
+                    ps.setLong(3, System.currentTimeMillis());
+                    ps.executeUpdate();
+                }
+                rs.close();
+                ps.close();
+
+                // Load unlocked kits
+                ps = conn.prepareStatement(
+                        "SELECT kit_name FROM player_kits WHERE uuid = ?"
+                );
+                ps.setString(1, uuid.toString());
+                rs = ps.executeQuery();
+                while (rs.next()) {
+                    data.unlockKit(rs.getString("kit_name"));
+                }
+                rs.close();
+                ps.close();
+
+                // Cache the data
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    playerDataCache.put(uuid, data);
+                });
+
+            } catch (SQLException e) {
+                plugin.getLogger().severe("Error loading player data for " + player.getName());
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void savePlayerData(UUID uuid) {
+        PlayerData data = playerDataCache.get(uuid);
+        if (data == null) return;
+
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try {
+                Connection conn = plugin.getDatabaseManager().getConnection();
+                if (conn == null) return;
+
+                PreparedStatement ps = conn.prepareStatement(
+                        "UPDATE player_data SET name = ?, gems = ?, total_kills = ?, " +
+                                "total_deaths = ?, highest_round = ?, games_played = ?, " +
+                                "games_won = ?, last_seen = ? WHERE uuid = ?"
+                );
+                ps.setString(1, data.getName());
+                ps.setInt(2, data.getGems());
+                ps.setInt(3, data.getTotalKills());
+                ps.setInt(4, data.getTotalDeaths());
+                ps.setInt(5, data.getHighestRound());
+                ps.setInt(6, data.getGamesPlayed());
+                ps.setInt(7, data.getGamesWon());
+                ps.setLong(8, System.currentTimeMillis());
+                ps.setString(9, uuid.toString());
+                ps.executeUpdate();
+                ps.close();
+
+            } catch (SQLException e) {
+                plugin.getLogger().severe("Error saving player data for " + uuid);
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void unlockKit(UUID uuid, String kitName) {
+        PlayerData data = playerDataCache.get(uuid);
+        if (data == null) return;
+
+        data.unlockKit(kitName);
+
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try {
+                Connection conn = plugin.getDatabaseManager().getConnection();
+                if (conn == null) return;
+
+                PreparedStatement ps = conn.prepareStatement(
+                        "INSERT INTO player_kits (uuid, kit_name, unlocked_at) VALUES (?, ?, ?)"
+                );
+                ps.setString(1, uuid.toString());
+                ps.setString(2, kitName);
+                ps.setLong(3, System.currentTimeMillis());
+                ps.executeUpdate();
+                ps.close();
+
+            } catch (SQLException e) {
+                plugin.getLogger().severe("Error unlocking kit for " + uuid);
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void unloadPlayerData(UUID uuid) {
+        savePlayerData(uuid);
+        playerDataCache.remove(uuid);
+    }
+
+    public void saveAll() {
+        for (UUID uuid : playerDataCache.keySet()) {
+            savePlayerData(uuid);
+        }
+    }
+}
