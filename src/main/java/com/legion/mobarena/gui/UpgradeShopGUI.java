@@ -26,9 +26,10 @@ public class UpgradeShopGUI {
     }
 
     public void openShop(Player player, Game game) {
-        int gold = game.getPlayerGold(player.getUniqueId());
+        // Count gold nuggets in player inventory
+        int goldNuggets = countGoldNuggets(player);
 
-        Inventory inv = Bukkit.createInventory(null, 27, "§8Upgrade Shop - §6" + gold + " Gold");
+        Inventory inv = Bukkit.createInventory(null, 27, "§8Upgrade Shop - §6" + goldNuggets + " Gold Nuggets");
 
         // Initialize player upgrade levels if not exists
         if (!playerUpgradeLevels.containsKey(player)) {
@@ -189,7 +190,6 @@ public class UpgradeShopGUI {
         if (clicked == null || !clicked.hasItemMeta()) return;
 
         String displayName = clicked.getItemMeta().getDisplayName();
-        int gold = game.getPlayerGold(player.getUniqueId());
 
         // Initialize player upgrades if not exists
         if (!playerUpgradeLevels.containsKey(player)) {
@@ -231,12 +231,11 @@ public class UpgradeShopGUI {
         int nextLevel = currentLevel + 1;
         int price = basePrice * (nextLevel + 1);
 
-        if (game.getPlayerGold(player.getUniqueId()) < price) {
+        if (!removeGoldNuggets(player, price)) {
             player.sendMessage(plugin.getConfig().getString("messages.not-enough-gold"));
             return;
         }
 
-        game.removePlayerGold(player.getUniqueId(), price);
         upgrades.put(type, nextLevel);
 
         // Give the armor piece
@@ -268,12 +267,11 @@ public class UpgradeShopGUI {
         int nextLevel = currentLevel + 1;
         int price = 15 * (nextLevel + 1);
 
-        if (game.getPlayerGold(player.getUniqueId()) < price) {
+        if (!removeGoldNuggets(player, price)) {
             player.sendMessage(plugin.getConfig().getString("messages.not-enough-gold"));
             return;
         }
 
-        game.removePlayerGold(player.getUniqueId(), price);
         upgrades.put("sword", nextLevel);
 
         // Remove old sword and give new one
@@ -296,12 +294,11 @@ public class UpgradeShopGUI {
         int nextLevel = currentLevel + 1;
         int price = 10 * nextLevel;
 
-        if (game.getPlayerGold(player.getUniqueId()) < price) {
+        if (!removeGoldNuggets(player, price)) {
             player.sendMessage(plugin.getConfig().getString("messages.not-enough-gold"));
             return;
         }
 
-        game.removePlayerGold(player.getUniqueId(), price);
         upgrades.put("bow", nextLevel);
 
         // Give upgraded bow
@@ -314,12 +311,11 @@ public class UpgradeShopGUI {
     }
 
     private void handleConsumablePurchase(Player player, Game game, ItemStack item, int price) {
-        if (game.getPlayerGold(player.getUniqueId()) < price) {
+        if (!removeGoldNuggets(player, price)) {
             player.sendMessage(plugin.getConfig().getString("messages.not-enough-gold"));
             return;
         }
 
-        game.removePlayerGold(player.getUniqueId(), price);
         player.getInventory().addItem(item);
 
         player.sendMessage(plugin.getConfig().getString("messages.purchased").replace("{item}", item.getType().name()));
@@ -333,6 +329,38 @@ public class UpgradeShopGUI {
     private String toRoman(int num) {
         String[] romans = {"", "I", "II", "III", "IV", "V"};
         return romans[num];
+    }
+
+    private int countGoldNuggets(Player player) {
+        int count = 0;
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item != null && item.getType() == Material.GOLD_NUGGET) {
+                count += item.getAmount();
+            }
+        }
+        return count;
+    }
+
+    private boolean removeGoldNuggets(Player player, int amount) {
+        if (countGoldNuggets(player) < amount) {
+            return false;
+        }
+
+        int remaining = amount;
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item != null && item.getType() == Material.GOLD_NUGGET) {
+                int itemAmount = item.getAmount();
+                if (itemAmount <= remaining) {
+                    remaining -= itemAmount;
+                    item.setAmount(0);
+                } else {
+                    item.setAmount(itemAmount - remaining);
+                    remaining = 0;
+                }
+                if (remaining == 0) break;
+            }
+        }
+        return true;
     }
 
     public void clearPlayerUpgrades(Player player) {

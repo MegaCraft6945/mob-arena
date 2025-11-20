@@ -279,11 +279,8 @@ public class GameManager {
         game.removeArenaMob(mob);
         game.decrementMobsRemaining();
 
-        // Drop gold nugget
-        mob.getWorld().dropItemNaturally(mob.getLocation(), new ItemStack(Material.GOLD_NUGGET));
-
-        // Give gold to player
-        game.addPlayerGold(killer.getUniqueId(), 1);
+        // Give gold nugget directly to player inventory
+        killer.getInventory().addItem(new ItemStack(Material.GOLD_NUGGET, 1));
 
         // Check if round is complete
         if (game.getMobsRemaining() <= 0) {
