@@ -34,7 +34,7 @@ public class BlockPlaceListener implements Listener {
                 } else {
                     // Not in game, block the placement
                     event.setCancelled(true);
-                    event.getPlayer().sendMessage(plugin.getConfig().getString("messages.arena-protected"));
+                    event.getPlayer().sendMessage(plugin.getMessage("cannot-place"));
                     return;
                 }
             }
@@ -42,7 +42,7 @@ public class BlockPlaceListener implements Listener {
             // For all other blocks, don't allow placing in arena unless player is admin
             if (!event.getPlayer().hasPermission("legion.admin")) {
                 event.setCancelled(true);
-                event.getPlayer().sendMessage(plugin.getConfig().getString("messages.arena-protected"));
+                event.getPlayer().sendMessage(plugin.getMessage("cannot-place"));
             }
         }
     }

@@ -30,7 +30,7 @@ public class BlockBreakListener implements Listener {
             // Don't allow breaking blocks in arena unless player is admin
             if (!event.getPlayer().hasPermission("legion.admin")) {
                 event.setCancelled(true);
-                event.getPlayer().sendMessage(plugin.getConfig().getString("messages.arena-protected"));
+                event.getPlayer().sendMessage(plugin.getMessage("cannot-break"));
             }
         }
     }

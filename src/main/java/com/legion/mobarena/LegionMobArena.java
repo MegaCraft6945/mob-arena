@@ -10,7 +10,11 @@ import com.legion.mobarena.handlers.PlayerDataManager;
 import com.legion.mobarena.listeners.*;
 import com.legion.mobarena.placeholders.LegionPlaceholders;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
 
 public class LegionMobArena extends JavaPlugin {
 
@@ -20,6 +24,7 @@ public class LegionMobArena extends JavaPlugin {
     private ArenaManager arenaManager;
     private KitManager kitManager;
     private PlayerDataManager playerDataManager;
+    private FileConfiguration messagesConfig;
 
     @Override
     public void onEnable() {
@@ -27,6 +32,9 @@ public class LegionMobArena extends JavaPlugin {
 
         // Save default config
         saveDefaultConfig();
+
+        // Load messages.yml
+        loadMessagesConfig();
 
         // Initialize managers
         this.databaseManager = new DatabaseManager(this);
@@ -105,5 +113,24 @@ public class LegionMobArena extends JavaPlugin {
 
     public PlayerDataManager getPlayerDataManager() {
         return playerDataManager;
+    }
+
+    public FileConfiguration getMessagesConfig() {
+        return messagesConfig;
+    }
+
+    private void loadMessagesConfig() {
+        File messagesFile = new File(getDataFolder(), "messages.yml");
+
+        // Create messages.yml if it doesn't exist
+        if (!messagesFile.exists()) {
+            saveResource("messages.yml", false);
+        }
+
+        messagesConfig = YamlConfiguration.loadConfiguration(messagesFile);
+    }
+
+    public String getMessage(String path) {
+        return messagesConfig.getString(path, "§cMessage not found: " + path);
     }
 }

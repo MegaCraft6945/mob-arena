@@ -1,0 +1,48 @@
+# Legion Mob Arena - Messages Configuration
+# Customize all plugin messages here
+# Use & for color codes (e.g., &a = green, &c = red, &e = yellow)
+
+# General messages
+prefix: "§7[§eLegion§7] §r"
+
+# Game messages
+round-complete: "§aRound #{round} Complete! +{gems} Gems"
+game-won: "§6§lCongratulations! You've completed all 50 rounds!"
+game-lost: "§cGame Over! You were defeated on Round #{round}"
+game-started: "§aGame started! Fight to survive!"
+game-countdown: "§eGame starting in §6{seconds} §eseconds..."
+player-joined: "§a{player} joined the game!"
+player-left: "§c{player} left the game!"
+
+# Shop messages
+not-enough-gold: "§cYou don't have enough gold nuggets!"
+purchased: "§aYou purchased {item}!"
+already-max-level: "§cYou already have the maximum level for this item!"
+
+# Kit messages
+kit-purchased: "§aYou unlocked the {kit} kit!"
+kit-selected: "§aYou selected the {kit} kit!"
+not-enough-gems: "§cYou don't have enough gems!"
+kit-already-unlocked: "§cYou already own this kit!"
+
+# Arena protection messages
+arena-protected: "§cYou cannot modify blocks in the arena!"
+cannot-break: "§cYou cannot break blocks in the arena!"
+cannot-place: "§cYou cannot place blocks in the arena!"
+
+# Admin messages
+arena-created: "§aArena §e{arena} §acreated successfully!"
+arena-deleted: "§cArena §e{arena} §cdeleted!"
+arena-enabled: "§aArena §e{arena} §ais now enabled!"
+arena-disabled: "§cArena §e{arena} §cis now disabled!"
+position-set: "§aPosition {pos} set at {x}, {y}, {z}"
+no-arena-found: "§cNo arena found at this location!"
+arena-exists: "§cAn arena with this name already exists!"
+invalid-arena: "§cInvalid arena name!"
+
+# Error messages
+command-player-only: "§cThis command can only be used by players!"
+no-permission: "§cYou don't have permission to use this command!"
+not-in-game: "§cYou are not in a game!"
+game-in-progress: "§cA game is already in progress in this arena!"
+arena-not-ready: "§cThis arena is not ready! Missing positions."

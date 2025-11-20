@@ -265,7 +265,7 @@ public class UpgradeShopGUI {
         int price = basePrice * (nextLevel + 1);
 
         if (!removeGoldNuggets(player, price)) {
-            player.sendMessage(plugin.getConfig().getString("messages.not-enough-gold"));
+            player.sendMessage(plugin.getMessage("not-enough-gold"));
             return;
         }
 
@@ -289,7 +289,7 @@ public class UpgradeShopGUI {
             player.getInventory().setBoots(armorPiece);
         }
 
-        player.sendMessage(plugin.getConfig().getString("messages.purchased").replace("{item}", capitalize(type)));
+        player.sendMessage(plugin.getMessage("purchased").replace("{item}", capitalize(type)));
         openShop(player, game);
     }
 
@@ -307,7 +307,7 @@ public class UpgradeShopGUI {
         int price = 15 * (nextLevel + 1);
 
         if (!removeGoldNuggets(player, price)) {
-            player.sendMessage(plugin.getConfig().getString("messages.not-enough-gold"));
+            player.sendMessage(plugin.getMessage("not-enough-gold"));
             return;
         }
 
@@ -323,7 +323,7 @@ public class UpgradeShopGUI {
         }
         player.getInventory().addItem(newSword);
 
-        player.sendMessage(plugin.getConfig().getString("messages.purchased").replace("{item}", "Sword"));
+        player.sendMessage(plugin.getMessage("purchased").replace("{item}", "Sword"));
         openShop(player, game);
     }
 
@@ -349,7 +349,7 @@ public class UpgradeShopGUI {
         }
 
         if (!removeGoldNuggets(player, price)) {
-            player.sendMessage(plugin.getConfig().getString("messages.not-enough-gold"));
+            player.sendMessage(plugin.getMessage("not-enough-gold"));
             return;
         }
 
@@ -374,19 +374,19 @@ public class UpgradeShopGUI {
         player.getInventory().addItem(bow);
 
         String itemName = (nextLevel == 1) ? "Bow" : "Bow Power " + toRoman(nextLevel - 1);
-        player.sendMessage(plugin.getConfig().getString("messages.purchased").replace("{item}", itemName));
+        player.sendMessage(plugin.getMessage("purchased").replace("{item}", itemName));
         openShop(player, game);
     }
 
     private void handleConsumablePurchase(Player player, Game game, ItemStack item, int price) {
         if (!removeGoldNuggets(player, price)) {
-            player.sendMessage(plugin.getConfig().getString("messages.not-enough-gold"));
+            player.sendMessage(plugin.getMessage("not-enough-gold"));
             return;
         }
 
         player.getInventory().addItem(item);
 
-        player.sendMessage(plugin.getConfig().getString("messages.purchased").replace("{item}", item.getType().name()));
+        player.sendMessage(plugin.getMessage("purchased").replace("{item}", item.getType().name()));
         openShop(player, game);
     }
 

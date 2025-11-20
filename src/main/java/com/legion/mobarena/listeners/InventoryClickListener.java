@@ -60,6 +60,12 @@ public class InventoryClickListener implements Listener {
         // Admin Menu GUIs
         else if (title.contains("Admin Menu") || title.contains("Manage Arenas")) {
             event.setCancelled(true);
+
+            // Check if clicked item is null or has no metadata
+            if (clicked == null || !clicked.hasItemMeta()) {
+                return;
+            }
+
             AdminCommand cmd = (AdminCommand) plugin.getCommand("legionadmin").getExecutor();
 
             if (title.contains("Admin Menu")) {
