@@ -109,6 +109,11 @@ public class UpgradeShopGUI {
 
         Inventory inv = Bukkit.createInventory(null, 45, "§8§l✦ §6§lArmor Shop §8§l✦ §e" + goldDisplay + "G");
 
+        // Initialize player upgrade levels if not exists
+        if (!playerUpgradeLevels.containsKey(player)) {
+            playerUpgradeLevels.put(player, new HashMap<>());
+        }
+
         Map<String, Integer> upgrades = playerUpgradeLevels.get(player);
 
         // Add decorative border
@@ -171,6 +176,11 @@ public class UpgradeShopGUI {
         String goldDisplay = goldNuggets >= 1000 ? String.format("%.1fK", goldNuggets / 1000.0) : String.valueOf(goldNuggets);
 
         Inventory inv = Bukkit.createInventory(null, 54, "§8§l✦ §c§lWeapons Shop §8§l✦ §e" + goldDisplay + "G");
+
+        // Initialize player upgrade levels if not exists
+        if (!playerUpgradeLevels.containsKey(player)) {
+            playerUpgradeLevels.put(player, new HashMap<>());
+        }
 
         Map<String, Integer> upgrades = playerUpgradeLevels.get(player);
 
@@ -255,6 +265,11 @@ public class UpgradeShopGUI {
         String goldDisplay = goldNuggets >= 1000 ? String.format("%.1fK", goldNuggets / 1000.0) : String.valueOf(goldNuggets);
 
         Inventory inv = Bukkit.createInventory(null, 45, "§8§l✦ §a§lConsumables Shop §8§l✦ §e" + goldDisplay + "G");
+
+        // Initialize player upgrade levels if not exists
+        if (!playerUpgradeLevels.containsKey(player)) {
+            playerUpgradeLevels.put(player, new HashMap<>());
+        }
 
         // Add decorative border
         ItemStack border = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
