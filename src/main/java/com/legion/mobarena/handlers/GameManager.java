@@ -229,22 +229,63 @@ public class GameManager {
     }
 
     private Entity spawnMobForRound(Location location, int round) {
-        EntityType[] mobTypes = {
-                EntityType.ZOMBIE, EntityType.SKELETON, EntityType.SPIDER,
-                EntityType.CREEPER, EntityType.ENDERMAN, EntityType.WITCH
-        };
+        Random random = new Random();
+        EntityType type;
 
-        // Higher rounds have tougher mobs
-        int maxIndex = Math.min(round / 5 + 2, mobTypes.length);
-        EntityType type = mobTypes[new Random().nextInt(maxIndex)];
+        // Determine round theme for variety
+        int roundMod = round % 10;
+
+        if (roundMod == 1 || roundMod == 2) {
+            // Early rounds: Zombies and Skeletons
+            type = random.nextBoolean() ? EntityType.ZOMBIE : EntityType.SKELETON;
+        } else if (roundMod == 3 || roundMod == 4) {
+            // Spider rounds
+            type = random.nextInt(3) == 0 ? EntityType.CAVE_SPIDER : EntityType.SPIDER;
+        } else if (roundMod == 5 || roundMod == 6) {
+            // Mixed dangerous mobs
+            EntityType[] options = {EntityType.CREEPER, EntityType.ZOMBIE, EntityType.SKELETON, EntityType.SPIDER};
+            type = options[random.nextInt(options.length)];
+        } else if (roundMod == 7 || roundMod == 8) {
+            // Advanced mobs
+            EntityType[] options = {EntityType.WITCH, EntityType.ENDERMAN, EntityType.BLAZE, EntityType.ZOMBIE_VILLAGER};
+            type = options[random.nextInt(options.length)];
+        } else {
+            // Mixed rounds with all types
+            EntityType[] allTypes = {
+                EntityType.ZOMBIE, EntityType.SKELETON, EntityType.SPIDER,
+                EntityType.CREEPER, EntityType.ENDERMAN, EntityType.WITCH,
+                EntityType.CAVE_SPIDER, EntityType.BLAZE, EntityType.HUSK,
+                EntityType.STRAY, EntityType.ZOMBIE_VILLAGER
+            };
+            type = allTypes[random.nextInt(allTypes.length)];
+        }
 
         Entity entity = location.getWorld().spawnEntity(location, type);
 
-        // Prevent mobs from despawning
+        // Prevent mobs from despawning and apply enhancements
         if (entity instanceof LivingEntity) {
             LivingEntity mob = (LivingEntity) entity;
             mob.setRemoveWhenFarAway(false);
             mob.setPersistent(true);
+
+            // Add difficulty modifiers for higher rounds
+            if (round >= 10) {
+                double healthMultiplier = 1.0 + (round / 10.0) * 0.5;
+                mob.setMaxHealth(mob.getMaxHealth() * healthMultiplier);
+                mob.setHealth(mob.getMaxHealth());
+            }
+
+            // Give equipment to zombies and skeletons in higher rounds
+            if (round >= 5 && (type == EntityType.ZOMBIE || type == EntityType.SKELETON)) {
+                if (random.nextInt(3) == 0) { // 33% chance
+                    if (type == EntityType.ZOMBIE) {
+                        mob.getEquipment().setItemInMainHand(new ItemStack(Material.IRON_SWORD));
+                    }
+                    if (random.nextInt(2) == 0) {
+                        mob.getEquipment().setHelmet(new ItemStack(Material.IRON_HELMET));
+                    }
+                }
+            }
         }
 
         return entity;
