@@ -62,18 +62,24 @@ public class DatabaseManager {
             plugin.getLogger().severe("MySQL JDBC Driver not found!");
             plugin.getLogger().severe("Please report this issue to the plugin developer.");
         } catch (SQLException e) {
-            plugin.getLogger().severe("=============================================");
-            plugin.getLogger().severe("Could not connect to MySQL database!");
+            plugin.getLogger().severe("========================================================");
+            plugin.getLogger().severe("MYSQL CONNECTION FAILED!");
             plugin.getLogger().severe("");
-            plugin.getLogger().severe("To use this plugin, you have two options:");
-            plugin.getLogger().severe("1. Set up a MySQL database and configure it in config.yml");
-            plugin.getLogger().severe("2. Disable MySQL in config.yml: database.enabled: false");
+            plugin.getLogger().severe("The plugin could not connect to your MySQL database.");
             plugin.getLogger().severe("");
-            plugin.getLogger().severe("Current settings:");
-            plugin.getLogger().severe("  Host: " + host + ":" + port);
-            plugin.getLogger().severe("  Database: " + database);
-            plugin.getLogger().severe("  Username: " + username);
-            plugin.getLogger().severe("=============================================");
+            plugin.getLogger().severe("Quick Fix Options:");
+            plugin.getLogger().severe("  1. Don't have MySQL? Disable it!");
+            plugin.getLogger().severe("     Edit: plugins/LegionMobArena/config.yml");
+            plugin.getLogger().severe("     Change: database.enabled: false");
+            plugin.getLogger().severe("");
+            plugin.getLogger().severe("  2. Have MySQL? Check your settings!");
+            plugin.getLogger().severe("     Config: plugins/LegionMobArena/config.yml");
+            plugin.getLogger().severe("     Current: " + host + ":" + port + "/" + database);
+            plugin.getLogger().severe("     User: " + username);
+            plugin.getLogger().severe("");
+            plugin.getLogger().severe("NOTE: The plugin will work without MySQL, but player");
+            plugin.getLogger().severe("      data won't be saved between server restarts.");
+            plugin.getLogger().severe("========================================================");
         }
     }
 
