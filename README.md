@@ -147,6 +147,34 @@ database:
   password: password
 ```
 
+## Leaderboard System
+
+The plugin includes a built-in leaderboard system that tracks player statistics:
+- Highest round reached
+- Total games played
+- Total kills
+- Total gems earned
+
+### For Server Owners: Display Your Leaderboard
+
+Want to show your server's leaderboard on a free website? See **[LEADERBOARD_FOR_SERVER_OWNERS.md](LEADERBOARD_FOR_SERVER_OWNERS.md)** for a complete setup guide!
+
+Features:
+- ✅ Beautiful, responsive website
+- ✅ 100% free hosting with GitHub Pages
+- ✅ Auto-refreshing stats display
+- ✅ Mobile-friendly design
+- ✅ Optional automatic updates
+
+The plugin automatically saves stats to `plugins/LegionMobArena/leaderboard.json` which you can display on your own GitHub Pages website in just 5-10 minutes!
+
+### In-Game Stats
+
+Players can view their stats anytime with:
+```
+/legion stats
+```
+
 ## Building from Source
 
 Requirements:
