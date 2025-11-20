@@ -16,7 +16,7 @@
 # TOP KILLS LEADERBOARD
 # ============================================================
 legion_top_kills:
-  location: world:0.500:100.000:0.500
+  location: world:-53.500:-59.000:38.500
   enabled: true
   display-range: 48
   update-range: 48
@@ -63,7 +63,7 @@ legion_top_kills:
 # TOP GAMES PLAYED LEADERBOARD
 # ============================================================
 legion_top_games:
-  location: world:10.500:100.000:0.500
+  location: world:-53.500:-59.000:48.500
   enabled: true
   display-range: 48
   update-range: 48
@@ -110,7 +110,7 @@ legion_top_games:
 # TOP WINS LEADERBOARD
 # ============================================================
 legion_top_wins:
-  location: world:20.500:100.000:0.500
+  location: world:-53.500:-59.000:58.500
   enabled: true
   display-range: 48
   update-range: 48
@@ -157,7 +157,7 @@ legion_top_wins:
 # PLAYER STATS HOLOGRAM (OPTIONAL)
 # ============================================================
 legion_player_stats:
-  location: world:30.500:100.000:0.500
+  location: world:-53.500:-59.000:68.500
   enabled: false
   display-range: 48
   update-range: 48
