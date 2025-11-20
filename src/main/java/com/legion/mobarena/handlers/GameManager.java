@@ -648,9 +648,10 @@ public class GameManager {
         game.removePlayer(player.getUniqueId());
         playerGames.remove(player.getUniqueId());
 
-        // Clear inventory and upgrades when player leaves game
+        // Clear inventory, upgrades, and ability cooldowns when player leaves game
         player.getInventory().clear();
         upgradeShopGUI.clearPlayerUpgrades(player);
+        plugin.getPlayerInteractListener().clearCooldowns(player.getUniqueId());
 
         player.sendMessage("");
         player.sendMessage("§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");

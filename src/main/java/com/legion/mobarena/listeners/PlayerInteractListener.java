@@ -17,12 +17,18 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 public class PlayerInteractListener implements Listener {
 
     private final LegionMobArena plugin;
+    private final Map<UUID, Map<String, Long>> cooldowns;
 
     public PlayerInteractListener(LegionMobArena plugin) {
         this.plugin = plugin;
+        this.cooldowns = new HashMap<>();
     }
 
     @EventHandler
@@ -76,17 +82,15 @@ public class PlayerInteractListener implements Listener {
     }
 
     private void handleBruteRush(Player player, ItemStack item) {
-        if (item.getAmount() <= 0) return;
+        if (!checkCooldown(player, "brute_rush", 20)) return; // 20 second cooldown
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 100, 1)); // 5 seconds
         player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1f, 1.5f);
         player.sendMessage("§6§lBrute Rush activated!");
-
-        item.setAmount(item.getAmount() - 1);
     }
 
     private void handleArrowStorm(Player player, ItemStack item) {
-        if (item.getAmount() <= 0) return;
+        if (!checkCooldown(player, "arrow_storm", 15)) return; // 15 second cooldown
 
         Location eyeLoc = player.getEyeLocation();
         Vector direction = eyeLoc.getDirection();
@@ -103,33 +107,27 @@ public class PlayerInteractListener implements Listener {
 
         player.playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 1f, 0.8f);
         player.sendMessage("§6§lArrow Storm activated!");
-
-        item.setAmount(item.getAmount() - 1);
     }
 
     private void handleIronSkin(Player player, ItemStack item) {
-        if (item.getAmount() <= 0) return;
+        if (!checkCooldown(player, "iron_skin", 25)) return; // 25 second cooldown
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 160, 1)); // 8 seconds
         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1f, 2f);
         player.sendMessage("§6§lIron Skin activated!");
-
-        item.setAmount(item.getAmount() - 1);
     }
 
     private void handleShadowStep(Player player, ItemStack item) {
-        if (item.getAmount() <= 0) return;
+        if (!checkCooldown(player, "shadow_step", 20)) return; // 20 second cooldown
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 100, 1)); // 5 seconds
         player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 100, 0)); // 5 seconds
         player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
         player.sendMessage("§6§lShadow Step activated!");
-
-        item.setAmount(item.getAmount() - 1);
     }
 
     private void handleGroundSlam(Player player, ItemStack item, Game game) {
-        if (item.getAmount() <= 0) return;
+        if (!checkCooldown(player, "ground_slam", 18)) return; // 18 second cooldown
 
         // Knock back nearby mobs
         for (Entity entity : game.getArenaMobs()) {
@@ -143,12 +141,10 @@ public class PlayerInteractListener implements Listener {
         player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, player.getLocation(), 3);
         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1f, 0.8f);
         player.sendMessage("§6§lGround Slam activated!");
-
-        item.setAmount(item.getAmount() - 1);
     }
 
     private void handleLightningStrike(Player player, ItemStack item) {
-        if (item.getAmount() <= 0) return;
+        if (!checkCooldown(player, "lightning_strike", 22)) return; // 22 second cooldown
 
         Location target = player.getTargetBlock(null, 50).getLocation();
         player.getWorld().strikeLightningEffect(target);
@@ -162,33 +158,69 @@ public class PlayerInteractListener implements Listener {
 
         player.playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1f, 1f);
         player.sendMessage("§6§lLightning Strike activated!");
-
-        item.setAmount(item.getAmount() - 1);
     }
 
     private void handleShieldWall(Player player, ItemStack item) {
-        if (item.getAmount() <= 0) return;
+        if (!checkCooldown(player, "shield_wall", 30)) return; // 30 second cooldown
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 600, 1)); // 30 seconds, 4 absorption hearts
         player.playSound(player.getLocation(), Sound.ITEM_SHIELD_BLOCK, 1f, 1f);
         player.sendMessage("§6§lShield Wall activated!");
-
-        item.setAmount(item.getAmount() - 1);
     }
 
     private void handleRage(Player player, ItemStack item) {
-        if (item.getAmount() <= 0) return;
+        if (!checkCooldown(player, "rage", 28)) return; // 28 second cooldown
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 200, 2)); // 10 seconds, Strength III
         player.playSound(player.getLocation(), Sound.ENTITY_RAVAGER_ROAR, 1f, 1f);
         player.sendMessage("§6§lRage activated!");
-
-        item.setAmount(item.getAmount() - 1);
     }
 
     private void handleTurret(Player player, ItemStack item) {
         // Simplified turret - just place a message for now
         // Full implementation would require creating a turret system
         player.sendMessage("§cTurret ability coming soon!");
+    }
+
+    /**
+     * Check if an ability is off cooldown and set cooldown if available
+     * @param player The player using the ability
+     * @param abilityName The name of the ability
+     * @param cooldownSeconds Cooldown duration in seconds
+     * @return true if ability can be used, false if on cooldown
+     */
+    private boolean checkCooldown(Player player, String abilityName, int cooldownSeconds) {
+        UUID playerId = player.getUniqueId();
+
+        if (!cooldowns.containsKey(playerId)) {
+            cooldowns.put(playerId, new HashMap<>());
+        }
+
+        Map<String, Long> playerCooldowns = cooldowns.get(playerId);
+        long currentTime = System.currentTimeMillis();
+
+        if (playerCooldowns.containsKey(abilityName)) {
+            long lastUsed = playerCooldowns.get(abilityName);
+            long timeSince = currentTime - lastUsed;
+            long cooldownMillis = cooldownSeconds * 1000L;
+
+            if (timeSince < cooldownMillis) {
+                long remainingSeconds = (cooldownMillis - timeSince) / 1000;
+                player.sendMessage("§cAbility on cooldown! §e" + remainingSeconds + "s remaining");
+                player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.5f, 1f);
+                return false;
+            }
+        }
+
+        // Set cooldown and allow use
+        playerCooldowns.put(abilityName, currentTime);
+        return true;
+    }
+
+    /**
+     * Clear all cooldowns for a player (called when game ends)
+     */
+    public void clearCooldowns(UUID playerId) {
+        cooldowns.remove(playerId);
     }
 }

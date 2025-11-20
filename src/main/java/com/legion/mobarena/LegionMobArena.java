@@ -25,6 +25,7 @@ public class LegionMobArena extends JavaPlugin {
     private KitManager kitManager;
     private PlayerDataManager playerDataManager;
     private FileConfiguration messagesConfig;
+    private PlayerInteractListener playerInteractListener;
 
     @Override
     public void onEnable() {
@@ -86,9 +87,17 @@ public class LegionMobArena extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new BlockPlaceListener(this), this);
         getServer().getPluginManager().registerEvents(new EntityDamageListener(this), this);
         getServer().getPluginManager().registerEvents(new EntitySpawnListener(this), this);
-        getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
+
+        // Store PlayerInteractListener so GameManager can access it for cooldown clearing
+        this.playerInteractListener = new PlayerInteractListener(this);
+        getServer().getPluginManager().registerEvents(playerInteractListener, this);
+
         getServer().getPluginManager().registerEvents(new InventoryClickListener(this), this);
         getServer().getPluginManager().registerEvents(new InventoryDragListener(this), this);
+    }
+
+    public PlayerInteractListener getPlayerInteractListener() {
+        return playerInteractListener;
     }
 
     public static LegionMobArena getInstance() {
