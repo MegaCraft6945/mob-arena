@@ -183,6 +183,9 @@ public class GameManager {
 
         // Start action bar updater
         startActionBarUpdater(game);
+
+        // Start mob boundary checker
+        startMobBoundaryChecker(game);
     }
 
     private void spawnRoundMobs(Game game) {
@@ -270,6 +273,34 @@ public class GameManager {
                 }
             }
         }.runTaskTimer(plugin, 0L, 20L);
+    }
+
+    private void startMobBoundaryChecker(Game game) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (game.getState() != GameState.ACTIVE) {
+                    cancel();
+                    return;
+                }
+
+                Arena arena = game.getArena();
+                // Check each mob in the game
+                for (Entity mob : new ArrayList<>(game.getArenaMobs())) {
+                    if (mob == null || mob.isDead()) {
+                        game.removeArenaMob(mob);
+                        continue;
+                    }
+
+                    // Check if mob is outside arena boundaries
+                    if (!arena.contains(mob.getLocation())) {
+                        // Teleport mob back to a random spawn location in the arena
+                        Location spawnLoc = getRandomSpawnLocation(arena);
+                        mob.teleport(spawnLoc);
+                    }
+                }
+            }
+        }.runTaskTimer(plugin, 40L, 40L); // Check every 2 seconds
     }
 
     public void onMobKilled(Entity mob, Player killer) {
