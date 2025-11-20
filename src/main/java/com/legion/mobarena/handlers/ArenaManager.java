@@ -5,11 +5,11 @@ import com.legion.mobarena.models.Arena;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,63 +18,72 @@ public class ArenaManager {
 
     private final LegionMobArena plugin;
     private final Map<String, Arena> arenas;
+    private final File arenasFolder;
 
     public ArenaManager(LegionMobArena plugin) {
         this.plugin = plugin;
         this.arenas = new HashMap<>();
+        this.arenasFolder = new File(plugin.getDataFolder(), "arenas");
+
+        // Create arenas folder if it doesn't exist
+        if (!arenasFolder.exists()) {
+            arenasFolder.mkdirs();
+        }
+
         loadArenas();
     }
 
     private void loadArenas() {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+        File[] arenaFiles = arenasFolder.listFiles((dir, name) -> name.endsWith(".yml"));
+
+        if (arenaFiles == null || arenaFiles.length == 0) {
+            plugin.getLogger().info("No arenas found.");
+            return;
+        }
+
+        for (File file : arenaFiles) {
             try {
-                Connection conn = plugin.getDatabaseManager().getConnection();
-                if (conn == null) return;
+                FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
-                PreparedStatement ps = conn.prepareStatement("SELECT * FROM arenas");
-                ResultSet rs = ps.executeQuery();
+                String name = config.getString("name");
+                String worldName = config.getString("world");
+                World world = Bukkit.getWorld(worldName);
 
-                while (rs.next()) {
-                    String name = rs.getString("name");
-                    String worldName = rs.getString("world");
-                    World world = Bukkit.getWorld(worldName);
-
-                    if (world == null) {
-                        plugin.getLogger().warning("World " + worldName + " not found for arena " + name);
-                        continue;
-                    }
-
-                    Location min = new Location(world,
-                            rs.getInt("min_x"),
-                            rs.getInt("min_y"),
-                            rs.getInt("min_z"));
-                    Location max = new Location(world,
-                            rs.getInt("max_x"),
-                            rs.getInt("max_y"),
-                            rs.getInt("max_z"));
-                    Location lobby = new Location(world,
-                            rs.getDouble("lobby_x"),
-                            rs.getDouble("lobby_y"),
-                            rs.getDouble("lobby_z"),
-                            rs.getFloat("lobby_yaw"),
-                            rs.getFloat("lobby_pitch"));
-
-                    Arena arena = new Arena(name, world, min, max, lobby);
-                    arena.setEnabled(rs.getBoolean("enabled"));
-
-                    arenas.put(name.toLowerCase(), arena);
+                if (world == null) {
+                    plugin.getLogger().warning("World " + worldName + " not found for arena " + name);
+                    continue;
                 }
 
-                rs.close();
-                ps.close();
+                // Load positions
+                Location min = new Location(world,
+                        config.getInt("min.x"),
+                        config.getInt("min.y"),
+                        config.getInt("min.z"));
 
-                plugin.getLogger().info("Loaded " + arenas.size() + " arenas!");
+                Location max = new Location(world,
+                        config.getInt("max.x"),
+                        config.getInt("max.y"),
+                        config.getInt("max.z"));
 
-            } catch (SQLException e) {
-                plugin.getLogger().severe("Error loading arenas!");
+                Location lobby = new Location(world,
+                        config.getDouble("lobby.x"),
+                        config.getDouble("lobby.y"),
+                        config.getDouble("lobby.z"),
+                        (float) config.getDouble("lobby.yaw"),
+                        (float) config.getDouble("lobby.pitch"));
+
+                Arena arena = new Arena(name, world, min, max, lobby);
+                arena.setEnabled(config.getBoolean("enabled", true));
+
+                arenas.put(name.toLowerCase(), arena);
+
+            } catch (Exception e) {
+                plugin.getLogger().severe("Error loading arena from file: " + file.getName());
                 e.printStackTrace();
             }
-        });
+        }
+
+        plugin.getLogger().info("Loaded " + arenas.size() + " arenas from files!");
     }
 
     public Arena getArena(String name) {
@@ -92,63 +101,55 @@ public class ArenaManager {
         Arena arena = new Arena(name, world, min, max, lobby);
         arenas.put(name.toLowerCase(), arena);
 
-        // Save to database
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            try {
-                Connection conn = plugin.getDatabaseManager().getConnection();
-                if (conn == null) return;
-
-                PreparedStatement ps = conn.prepareStatement(
-                        "INSERT INTO arenas (name, world, min_x, min_y, min_z, max_x, max_y, max_z, " +
-                                "lobby_x, lobby_y, lobby_z, lobby_yaw, lobby_pitch, enabled) " +
-                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-                );
-                ps.setString(1, name);
-                ps.setString(2, world.getName());
-                ps.setInt(3, min.getBlockX());
-                ps.setInt(4, min.getBlockY());
-                ps.setInt(5, min.getBlockZ());
-                ps.setInt(6, max.getBlockX());
-                ps.setInt(7, max.getBlockY());
-                ps.setInt(8, max.getBlockZ());
-                ps.setDouble(9, lobby.getX());
-                ps.setDouble(10, lobby.getY());
-                ps.setDouble(11, lobby.getZ());
-                ps.setFloat(12, lobby.getYaw());
-                ps.setFloat(13, lobby.getPitch());
-                ps.setBoolean(14, true);
-                ps.executeUpdate();
-                ps.close();
-
-                plugin.getLogger().info("Arena " + name + " created!");
-
-            } catch (SQLException e) {
-                plugin.getLogger().severe("Error creating arena " + name);
-                e.printStackTrace();
-            }
-        });
+        // Save to file
+        saveArena(arena);
+        plugin.getLogger().info("Arena " + name + " created and saved to file!");
     }
 
     public void deleteArena(String name) {
         arenas.remove(name.toLowerCase());
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            try {
-                Connection conn = plugin.getDatabaseManager().getConnection();
-                if (conn == null) return;
+        // Delete file
+        File arenaFile = new File(arenasFolder, name.toLowerCase() + ".yml");
+        if (arenaFile.exists()) {
+            arenaFile.delete();
+            plugin.getLogger().info("Arena " + name + " deleted!");
+        }
+    }
 
-                PreparedStatement ps = conn.prepareStatement("DELETE FROM arenas WHERE name = ?");
-                ps.setString(1, name);
-                ps.executeUpdate();
-                ps.close();
+    public void saveArena(Arena arena) {
+        File arenaFile = new File(arenasFolder, arena.getName().toLowerCase() + ".yml");
+        FileConfiguration config = new YamlConfiguration();
 
-                plugin.getLogger().info("Arena " + name + " deleted!");
+        config.set("name", arena.getName());
+        config.set("world", arena.getWorld().getName());
 
-            } catch (SQLException e) {
-                plugin.getLogger().severe("Error deleting arena " + name);
-                e.printStackTrace();
-            }
-        });
+        // Save positions
+        Location min = arena.getMin();
+        config.set("min.x", min.getBlockX());
+        config.set("min.y", min.getBlockY());
+        config.set("min.z", min.getBlockZ());
+
+        Location max = arena.getMax();
+        config.set("max.x", max.getBlockX());
+        config.set("max.y", max.getBlockY());
+        config.set("max.z", max.getBlockZ());
+
+        Location lobby = arena.getLobby();
+        config.set("lobby.x", lobby.getX());
+        config.set("lobby.y", lobby.getY());
+        config.set("lobby.z", lobby.getZ());
+        config.set("lobby.yaw", lobby.getYaw());
+        config.set("lobby.pitch", lobby.getPitch());
+
+        config.set("enabled", arena.isEnabled());
+
+        try {
+            config.save(arenaFile);
+        } catch (IOException e) {
+            plugin.getLogger().severe("Error saving arena " + arena.getName());
+            e.printStackTrace();
+        }
     }
 
     public Arena getArenaAtLocation(Location location) {

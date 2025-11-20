@@ -85,6 +85,7 @@ public class InventoryClickListener implements Listener {
                     var arena = plugin.getArenaManager().getArena(arenaName);
                     if (arena != null) {
                         arena.setEnabled(!arena.isEnabled());
+                        plugin.getArenaManager().saveArena(arena); // Save changes
                         player.sendMessage("§7Arena §e" + arenaName + " §7is now " +
                                 (arena.isEnabled() ? "§aenabled" : "§cdisabled"));
                         cmd.getAdminMenu().openArenaManagement(player);
