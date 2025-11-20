@@ -1,0 +1,42 @@
+location: world:-44.511:-56.000:47.491
+enabled: true
+display-range: 48
+update-range: 48
+update-interval: 20
+facing: 0.0
+down-origin: false
+pages:
+- lines:
+  - content: '&8&m━━━━━━━━━━━━━━━━━━━━━━'
+    height: 0.3
+  - content: '&b&l🎮 TOP GAMES PLAYED 🎮'
+    height: 0.3
+  - content: '&8&m━━━━━━━━━━━━━━━━━━━━━━'
+    height: 0.3
+  - content: ''
+    height: 0.1
+  - content: '&e#1 &f%legion_top_games_1_name% &7- &a%legion_top_games_1_value%'
+    height: 0.3
+  - content: '&e#2 &f%legion_top_games_2_name% &7- &a%legion_top_games_2_value%'
+    height: 0.3
+  - content: '&e#3 &f%legion_top_games_3_name% &7- &a%legion_top_games_3_value%'
+    height: 0.3
+  - content: '&e#4 &f%legion_top_games_4_name% &7- &a%legion_top_games_4_value%'
+    height: 0.3
+  - content: '&e#5 &f%legion_top_games_5_name% &7- &a%legion_top_games_5_value%'
+    height: 0.3
+  - content: '&e#6 &f%legion_top_games_6_name% &7- &a%legion_top_games_6_value%'
+    height: 0.3
+  - content: '&e#7 &f%legion_top_games_7_name% &7- &a%legion_top_games_7_value%'
+    height: 0.3
+  - content: '&e#8 &f%legion_top_games_8_name% &7- &a%legion_top_games_8_value%'
+    height: 0.3
+  - content: '&e#9 &f%legion_top_games_9_name% &7- &a%legion_top_games_9_value%'
+    height: 0.3
+  - content: '&e#10 &f%legion_top_games_10_name% &7- &a%legion_top_games_10_value%'
+    height: 0.3
+  - content: ''
+    height: 0.1
+  - content: '&8&m━━━━━━━━━━━━━━━━━━━━━━'
+    height: 0.3
+  actions: {}

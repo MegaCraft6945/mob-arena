@@ -1,0 +1,42 @@
+location: world:-40.525:-56.000:47.445
+enabled: true
+display-range: 48
+update-range: 48
+update-interval: 20
+facing: 0.0
+down-origin: false
+pages:
+- lines:
+  - content: '&8&m━━━━━━━━━━━━━━━━━━━━━━'
+    height: 0.3
+  - content: '&a&l👑 TOP WINS 👑'
+    height: 0.3
+  - content: '&8&m━━━━━━━━━━━━━━━━━━━━━━'
+    height: 0.3
+  - content: ''
+    height: 0.1
+  - content: '&e#1 &f%legion_top_wins_1_name% &7- &a%legion_top_wins_1_value%'
+    height: 0.3
+  - content: '&e#2 &f%legion_top_wins_2_name% &7- &a%legion_top_wins_2_value%'
+    height: 0.3
+  - content: '&e#3 &f%legion_top_wins_3_name% &7- &a%legion_top_wins_3_value%'
+    height: 0.3
+  - content: '&e#4 &f%legion_top_wins_4_name% &7- &a%legion_top_wins_4_value%'
+    height: 0.3
+  - content: '&e#5 &f%legion_top_wins_5_name% &7- &a%legion_top_wins_5_value%'
+    height: 0.3
+  - content: '&e#6 &f%legion_top_wins_6_name% &7- &a%legion_top_wins_6_value%'
+    height: 0.3
+  - content: '&e#7 &f%legion_top_wins_7_name% &7- &a%legion_top_wins_7_value%'
+    height: 0.3
+  - content: '&e#8 &f%legion_top_wins_8_name% &7- &a%legion_top_wins_8_value%'
+    height: 0.3
+  - content: '&e#9 &f%legion_top_wins_9_name% &7- &a%legion_top_wins_9_value%'
+    height: 0.3
+  - content: '&e#10 &f%legion_top_wins_10_name% &7- &a%legion_top_wins_10_value%'
+    height: 0.3
+  - content: ''
+    height: 0.1
+  - content: '&8&m━━━━━━━━━━━━━━━━━━━━━━'
+    height: 0.3
+  actions: {}

@@ -1,0 +1,44 @@
+location: world:-36.510:-56.000:47.459
+enabled: true
+display-range: 48
+update-range: 48
+update-interval: 20
+facing: 0.0
+down-origin: false
+pages:
+- lines:
+  - content: '&8&m━━━━━━━━━━━━━━━━━━━━━━'
+    height: 0.3
+  - content: '&6&lYour Legion Stats'
+    height: 0.3
+  - content: '&8&m━━━━━━━━━━━━━━━━━━━━━━'
+    height: 0.3
+  - content: ''
+    height: 0.1
+  - content: '&eGems: &a%legion_gems%'
+    height: 0.3
+  - content: '&eHighest Round: &a%legion_highest_round%'
+    height: 0.3
+  - content: '&eTotal Kills: &a%legion_kills%'
+    height: 0.3
+  - content: '&eTotal Deaths: &a%legion_deaths%'
+    height: 0.3
+  - content: '&eK/D Ratio: &a%legion_kdr%'
+    height: 0.3
+  - content: ''
+    height: 0.1
+  - content: '&eGames Played: &a%legion_games_played%'
+    height: 0.3
+  - content: '&eGames Won: &a%legion_wins%'
+    height: 0.3
+  - content: '&eWin Rate: &a%legion_winrate%%'
+    height: 0.3
+  - content: ''
+    height: 0.1
+  - content: '&eUnlocked Kits: &a%legion_unlocked_kits%&7/&a9'
+    height: 0.3
+  - content: ''
+    height: 0.1
+  - content: '&8&m━━━━━━━━━━━━━━━━━━━━━━'
+    height: 0.3
+  actions: {}
