@@ -165,14 +165,40 @@ public class GameManager {
         if (kit == null) return;
 
         player.getInventory().clear();
-        player.getInventory().setArmorContents(kit.getArmor());
 
+        // Make armor unbreakable and give to player
+        ItemStack[] armor = kit.getArmor();
+        for (int i = 0; i < armor.length; i++) {
+            if (armor[i] != null) {
+                makeUnbreakable(armor[i]);
+            }
+        }
+        player.getInventory().setArmorContents(armor);
+
+        // Make items unbreakable and give to player
         for (ItemStack item : kit.getItems()) {
+            makeUnbreakable(item);
             player.getInventory().addItem(item);
         }
 
+        // Ability item is already unbreakable from Kit.createItem()
         if (kit.getAbilityItem() != null) {
             player.getInventory().addItem(kit.getAbilityItem());
+        }
+
+        // Give emerald for upgrade shop access
+        ItemStack emerald = new ItemStack(Material.EMERALD, 1);
+        makeUnbreakable(emerald);
+        player.getInventory().setItem(8, emerald);
+    }
+
+    private void makeUnbreakable(ItemStack item) {
+        if (item != null && item.getType() != Material.AIR) {
+            ItemMeta meta = item.getItemMeta();
+            if (meta != null) {
+                meta.setUnbreakable(true);
+                item.setItemMeta(meta);
+            }
         }
     }
 
@@ -651,6 +677,7 @@ public class GameManager {
     public void endGame(Game game) {
         // Clean up
         game.clearArenaMobs();
+        game.clearPlacedCakes();
 
         // Clear items in arena
         Arena arena = game.getArena();
@@ -688,6 +715,13 @@ public class GameManager {
     public void endAllGames() {
         for (Game game : new ArrayList<>(activeGames.values())) {
             endGame(game);
+        }
+    }
+
+    public void trackPlacedCake(Player player, Location cakeLocation) {
+        Game game = getPlayerGame(player.getUniqueId());
+        if (game != null) {
+            game.addPlacedCake(cakeLocation);
         }
     }
 

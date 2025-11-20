@@ -1,5 +1,6 @@
 package com.legion.mobarena.models;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -12,6 +13,7 @@ public class Game {
     private final Map<UUID, Integer> playerGems;
     private final Map<UUID, Kit> playerKits;
     private final Set<Entity> arenaMobs;
+    private final Set<Location> placedCakes;
 
     private GameState state;
     private int currentRound;
@@ -25,6 +27,7 @@ public class Game {
         this.playerGems = new HashMap<>();
         this.playerKits = new HashMap<>();
         this.arenaMobs = new HashSet<>();
+        this.placedCakes = new HashSet<>();
         this.state = GameState.WAITING;
         this.currentRound = 0;
         this.mobsRemaining = 0;
@@ -137,6 +140,23 @@ public class Game {
             mob.remove();
         }
         arenaMobs.clear();
+    }
+
+    public Set<Location> getPlacedCakes() {
+        return placedCakes;
+    }
+
+    public void addPlacedCake(Location location) {
+        placedCakes.add(location);
+    }
+
+    public void clearPlacedCakes() {
+        for (Location cakeLocation : new HashSet<>(placedCakes)) {
+            if (cakeLocation.getBlock().getType() == org.bukkit.Material.CAKE) {
+                cakeLocation.getBlock().setType(org.bukkit.Material.AIR);
+            }
+        }
+        placedCakes.clear();
     }
 
     public int calculateMobsForRound(int round) {

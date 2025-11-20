@@ -29,7 +29,15 @@ public class UpgradeShopGUI {
         // Count gold nuggets in player inventory
         int goldNuggets = countGoldNuggets(player);
 
-        Inventory inv = Bukkit.createInventory(null, 27, "§8Upgrade Shop - §6" + goldNuggets + " Gold Nuggets");
+        // Format gold amount for title (abbreviate if large)
+        String goldDisplay;
+        if (goldNuggets >= 1000) {
+            goldDisplay = String.format("%.1fK", goldNuggets / 1000.0);
+        } else {
+            goldDisplay = String.valueOf(goldNuggets);
+        }
+
+        Inventory inv = Bukkit.createInventory(null, 27, "§8Shop - §6" + goldDisplay + " Gold");
 
         // Initialize player upgrade levels if not exists
         if (!playerUpgradeLevels.containsKey(player)) {
@@ -238,8 +246,14 @@ public class UpgradeShopGUI {
 
         upgrades.put(type, nextLevel);
 
-        // Give the armor piece
+        // Give the armor piece (unbreakable)
         ItemStack armorPiece = new ItemStack(materials[nextLevel]);
+        ItemMeta armorMeta = armorPiece.getItemMeta();
+        if (armorMeta != null) {
+            armorMeta.setUnbreakable(true);
+            armorPiece.setItemMeta(armorMeta);
+        }
+
         if (type.equals("helmet")) {
             player.getInventory().setHelmet(armorPiece);
         } else if (type.equals("chestplate")) {
@@ -274,9 +288,15 @@ public class UpgradeShopGUI {
 
         upgrades.put("sword", nextLevel);
 
-        // Remove old sword and give new one
+        // Remove old sword and give new one (unbreakable)
         player.getInventory().remove(swords[currentLevel]);
-        player.getInventory().addItem(new ItemStack(swords[nextLevel]));
+        ItemStack newSword = new ItemStack(swords[nextLevel]);
+        ItemMeta swordMeta = newSword.getItemMeta();
+        if (swordMeta != null) {
+            swordMeta.setUnbreakable(true);
+            newSword.setItemMeta(swordMeta);
+        }
+        player.getInventory().addItem(newSword);
 
         player.sendMessage(plugin.getConfig().getString("messages.purchased").replace("{item}", "Sword"));
         openShop(player, game);
@@ -301,9 +321,14 @@ public class UpgradeShopGUI {
 
         upgrades.put("bow", nextLevel);
 
-        // Give upgraded bow
+        // Give upgraded bow (unbreakable)
         ItemStack bow = new ItemStack(Material.BOW);
         bow.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, nextLevel);
+        ItemMeta bowMeta = bow.getItemMeta();
+        if (bowMeta != null) {
+            bowMeta.setUnbreakable(true);
+            bow.setItemMeta(bowMeta);
+        }
         player.getInventory().addItem(bow);
 
         player.sendMessage(plugin.getConfig().getString("messages.purchased").replace("{item}", "Bow Upgrade"));

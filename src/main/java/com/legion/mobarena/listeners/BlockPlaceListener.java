@@ -23,6 +23,8 @@ public class BlockPlaceListener implements Listener {
             // Allow placing cakes if player is in game
             if (event.getBlock().getType() == Material.CAKE) {
                 if (plugin.getGameManager().isPlayerInGame(event.getPlayer().getUniqueId())) {
+                    // Track the cake location so it can be cleared when game ends
+                    plugin.getGameManager().trackPlacedCake(event.getPlayer(), event.getBlock().getLocation());
                     return; // Allow cake placement
                 }
             }
