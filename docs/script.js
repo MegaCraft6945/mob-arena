@@ -1,7 +1,14 @@
+// Configuration: Choose your data source
+// Option 1: Live MySQL API (recommended) - Always up-to-date
+// const API_URL = 'https://your-project.vercel.app/api/leaderboard';
+
+// Option 2: Static JSON file - Requires manual updates
+const API_URL = 'leaderboard.json';
+
 // Fetch and display leaderboard data
 async function loadLeaderboard() {
     try {
-        const response = await fetch('leaderboard.json');
+        const response = await fetch(API_URL);
         if (!response.ok) {
             throw new Error('Failed to load leaderboard data');
         }
@@ -26,6 +33,7 @@ function displayLeaderboard(players) {
     }
 
     // Sort players by highest round, then by total kills
+    // (only needed if using static JSON; API already sorts)
     players.sort((a, b) => {
         if (b.highestRound !== a.highestRound) {
             return b.highestRound - a.highestRound;

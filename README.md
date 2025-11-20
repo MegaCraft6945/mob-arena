@@ -157,16 +157,27 @@ The plugin includes a built-in leaderboard system that tracks player statistics:
 
 ### For Server Owners: Display Your Leaderboard
 
-Want to show your server's leaderboard on a free website? See **[LEADERBOARD_FOR_SERVER_OWNERS.md](LEADERBOARD_FOR_SERVER_OWNERS.md)** for a complete setup guide!
+Want to show your server's leaderboard on a free website? Choose your setup:
 
-Features:
-- ✅ Beautiful, responsive website
-- ✅ 100% free hosting with GitHub Pages
-- ✅ Auto-refreshing stats display
-- ✅ Mobile-friendly design
-- ✅ Optional automatic updates
+#### Option 1: Live MySQL Leaderboard (Recommended)
+✅ **Always up-to-date** - Reads directly from your database
+✅ **100% automatic** - No manual updates needed
+✅ **100% free** - Uses Vercel free tier
 
-The plugin automatically saves stats to `plugins/LegionMobArena/leaderboard.json` which you can display on your own GitHub Pages website in just 5-10 minutes!
+See **[LIVE_MYSQL_LEADERBOARD.md](LIVE_MYSQL_LEADERBOARD.md)** for setup guide!
+
+#### Option 2: Manual Update Leaderboard
+✅ **Simpler setup** - Fork and deploy in 5 minutes
+✅ **100% free** - GitHub Pages only
+✅ **Manual or scripted updates** - You control when it updates
+
+See **[LEADERBOARD_FOR_SERVER_OWNERS.md](LEADERBOARD_FOR_SERVER_OWNERS.md)** for setup guide!
+
+Both options include:
+- Beautiful, responsive website design
+- Auto-refreshing display
+- Mobile-friendly layout
+- Custom domain support
 
 ### In-Game Stats
 
