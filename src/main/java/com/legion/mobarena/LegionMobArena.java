@@ -80,6 +80,7 @@ public class LegionMobArena extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new EntitySpawnListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
         getServer().getPluginManager().registerEvents(new InventoryClickListener(this), this);
+        getServer().getPluginManager().registerEvents(new InventoryDragListener(this), this);
     }
 
     public static LegionMobArena getInstance() {

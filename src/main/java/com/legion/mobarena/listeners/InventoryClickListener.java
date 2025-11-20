@@ -32,20 +32,24 @@ public class InventoryClickListener implements Listener {
         String title = event.getView().getTitle();
         ItemStack clicked = event.getCurrentItem();
 
-        if (clicked == null || !clicked.hasItemMeta()) return;
-
         // Kit Selection GUI
         if (title.contains("Select Your Kit")) {
             event.setCancelled(true);
-            kitSelectionGUI.handleClick(player, clicked);
-        }
-        // Upgrade Shop GUI
-        else if (title.contains("Upgrade Shop")) {
-            event.setCancelled(true);
-            Game game = plugin.getGameManager().getPlayerGame(player.getUniqueId());
-            if (game != null) {
-                upgradeShopGUI.handleClick(player, clicked, game);
+            if (clicked != null && clicked.hasItemMeta()) {
+                kitSelectionGUI.handleClick(player, clicked);
             }
+            return;
+        }
+        // Upgrade Shop GUI - Fixed title check to match new format "Shop - X Gold"
+        else if (title.contains("Shop -")) {
+            event.setCancelled(true);
+            if (clicked != null && clicked.hasItemMeta()) {
+                Game game = plugin.getGameManager().getPlayerGame(player.getUniqueId());
+                if (game != null) {
+                    upgradeShopGUI.handleClick(player, clicked, game);
+                }
+            }
+            return;
         }
         // Arena Selection GUI
         else if (title.contains("Select Arena")) {
