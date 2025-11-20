@@ -7,6 +7,7 @@ import com.legion.mobarena.gui.AdminMenuGUI;
 import com.legion.mobarena.handlers.GameManager;
 import com.legion.mobarena.handlers.ArenaManager;
 import com.legion.mobarena.handlers.KitManager;
+import com.legion.mobarena.handlers.LeaderboardManager;
 import com.legion.mobarena.handlers.PlayerDataManager;
 import com.legion.mobarena.listeners.*;
 import com.legion.mobarena.placeholders.LegionPlaceholders;
@@ -24,6 +25,7 @@ public class LegionMobArena extends JavaPlugin {
     private GameManager gameManager;
     private ArenaManager arenaManager;
     private KitManager kitManager;
+    private LeaderboardManager leaderboardManager;
     private PlayerDataManager playerDataManager;
     private FileConfiguration messagesConfig;
     private PlayerInteractListener playerInteractListener;
@@ -43,6 +45,7 @@ public class LegionMobArena extends JavaPlugin {
         this.databaseManager = new DatabaseManager(this);
         this.arenaManager = new ArenaManager(this);
         this.kitManager = new KitManager(this);
+        this.leaderboardManager = new LeaderboardManager(this);
         this.playerDataManager = new PlayerDataManager(this);
         this.gameManager = new GameManager(this);
 
@@ -72,6 +75,11 @@ public class LegionMobArena extends JavaPlugin {
         // End all active games
         if (gameManager != null) {
             gameManager.endAllGames();
+        }
+
+        // Save leaderboard before shutdown
+        if (leaderboardManager != null) {
+            leaderboardManager.saveLeaderboard();
         }
 
         // Disconnect from database
@@ -127,6 +135,10 @@ public class LegionMobArena extends JavaPlugin {
 
     public PlayerDataManager getPlayerDataManager() {
         return playerDataManager;
+    }
+
+    public LeaderboardManager getLeaderboardManager() {
+        return leaderboardManager;
     }
 
     public FileConfiguration getMessagesConfig() {

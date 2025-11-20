@@ -11,6 +11,7 @@ public class Game {
     private final Set<UUID> players;
     private final Map<UUID, Integer> playerGold;
     private final Map<UUID, Integer> playerGems;
+    private final Map<UUID, Integer> playerKills;
     private final Map<UUID, Kit> playerKits;
     private final Set<Entity> arenaMobs;
     private final Set<Location> placedCakes;
@@ -25,6 +26,7 @@ public class Game {
         this.players = new HashSet<>();
         this.playerGold = new HashMap<>();
         this.playerGems = new HashMap<>();
+        this.playerKills = new HashMap<>();
         this.playerKits = new HashMap<>();
         this.arenaMobs = new HashSet<>();
         this.placedCakes = new HashSet<>();
@@ -46,12 +48,14 @@ public class Game {
         players.add(player);
         playerGold.put(player, 0);
         playerGems.put(player, 0);
+        playerKills.put(player, 0);
     }
 
     public void removePlayer(UUID player) {
         players.remove(player);
         playerGold.remove(player);
         playerGems.remove(player);
+        playerKills.remove(player);
         playerKits.remove(player);
     }
 
@@ -73,6 +77,14 @@ public class Game {
 
     public void addPlayerGems(UUID player, int amount) {
         playerGems.put(player, getPlayerGems(player) + amount);
+    }
+
+    public int getPlayerKills(UUID player) {
+        return playerKills.getOrDefault(player, 0);
+    }
+
+    public void incrementPlayerKills(UUID player) {
+        playerKills.put(player, getPlayerKills(player) + 1);
     }
 
     public Kit getPlayerKit(UUID player) {

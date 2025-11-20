@@ -35,6 +35,12 @@ public class EntityDeathListener implements Listener {
                 if (data != null) {
                     data.addKill();
                 }
+
+                // Track kills in current game for leaderboard
+                var game = plugin.getGameManager().getPlayerGame(killer.getUniqueId());
+                if (game != null) {
+                    game.incrementPlayerKills(killer.getUniqueId());
+                }
             }
         } else {
             // Mob killed by non-player (e.g., another mob, environment)
