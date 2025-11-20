@@ -457,15 +457,37 @@ public class GameManager {
                         continue;
                     }
 
-                    // Check if mob is outside arena boundaries
-                    if (!arena.contains(mob.getLocation())) {
-                        // Teleport mob back to a random spawn location in the arena
-                        Location spawnLoc = getRandomSpawnLocation(arena);
-                        mob.teleport(spawnLoc);
+                    Location mobLoc = mob.getLocation();
+
+                    // Only teleport if mob is significantly outside arena (10+ blocks)
+                    if (!arena.contains(mobLoc)) {
+                        // Calculate distance from arena boundary
+                        Location min = arena.getMin();
+                        Location max = arena.getMax();
+
+                        double distanceOutside = 0;
+
+                        if (mobLoc.getX() < min.getX()) {
+                            distanceOutside = Math.max(distanceOutside, min.getX() - mobLoc.getX());
+                        } else if (mobLoc.getX() > max.getX()) {
+                            distanceOutside = Math.max(distanceOutside, mobLoc.getX() - max.getX());
+                        }
+
+                        if (mobLoc.getZ() < min.getZ()) {
+                            distanceOutside = Math.max(distanceOutside, min.getZ() - mobLoc.getZ());
+                        } else if (mobLoc.getZ() > max.getZ()) {
+                            distanceOutside = Math.max(distanceOutside, mobLoc.getZ() - max.getZ());
+                        }
+
+                        // Only teleport if mob is more than 10 blocks outside
+                        if (distanceOutside > 10.0) {
+                            Location spawnLoc = getRandomSpawnLocation(arena);
+                            mob.teleport(spawnLoc);
+                        }
                     }
                 }
             }
-        }.runTaskTimer(plugin, 40L, 40L); // Check every 2 seconds
+        }.runTaskTimer(plugin, 100L, 100L); // Check every 5 seconds (less frequent)
     }
 
     public void onMobKilled(Entity mob, Player killer) {
