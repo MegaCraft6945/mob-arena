@@ -63,7 +63,7 @@ public class GameManager {
         playerGames.put(player.getUniqueId(), game);
 
         player.teleport(arena.getLobby());
-        player.setGameMode(GameMode.ADVENTURE);
+        // Keep player in current gamemode (usually survival) - protection handled by listeners
 
         // Welcome messages
         player.sendMessage("");
@@ -648,6 +648,10 @@ public class GameManager {
         game.removePlayer(player.getUniqueId());
         playerGames.remove(player.getUniqueId());
 
+        // Clear inventory and upgrades when player leaves game
+        player.getInventory().clear();
+        upgradeShopGUI.clearPlayerUpgrades(player);
+
         player.sendMessage("");
         player.sendMessage("§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         player.sendMessage("§c§l           GAME OVER");
@@ -701,7 +705,7 @@ public class GameManager {
             Player player = Bukkit.getPlayer(playerId);
             if (player != null) {
                 player.teleport(lobby);
-                player.setGameMode(GameMode.SURVIVAL);
+                // Don't change gamemode - keep them in survival
                 player.getInventory().clear();
                 player.setHealth(20);
                 player.setFoodLevel(20);

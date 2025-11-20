@@ -40,8 +40,8 @@ public class InventoryClickListener implements Listener {
             }
             return;
         }
-        // Upgrade Shop GUI - Fixed title check to match new format "Shop - X Gold"
-        else if (title.contains("Shop -")) {
+        // Upgrade Shop GUI - Match new format "✦ Upgrade Shop ✦"
+        else if (title.contains("Upgrade Shop")) {
             event.setCancelled(true);
             if (clicked != null && clicked.hasItemMeta()) {
                 Game game = plugin.getGameManager().getPlayerGame(player.getUniqueId());

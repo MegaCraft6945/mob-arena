@@ -37,7 +37,7 @@ public class UpgradeShopGUI {
             goldDisplay = String.valueOf(goldNuggets);
         }
 
-        Inventory inv = Bukkit.createInventory(null, 27, "§8Shop - §6" + goldDisplay + " Gold");
+        Inventory inv = Bukkit.createInventory(null, 54, "§8§l✦ §6§lUpgrade Shop §8§l✦ §e" + goldDisplay + "G");
 
         // Initialize player upgrade levels if not exists
         if (!playerUpgradeLevels.containsKey(player)) {
@@ -46,59 +46,101 @@ public class UpgradeShopGUI {
 
         Map<String, Integer> upgrades = playerUpgradeLevels.get(player);
 
-        // Helmet - Slot 10
-        inv.setItem(10, createUpgradeItem(
+        // === ARMOR SECTION (Row 2) ===
+        // Header
+        inv.setItem(10, createSectionHeader("§6§lArmor Upgrades"));
+
+        // Helmet - Slot 20
+        inv.setItem(20, createUpgradeItem(
                 "helmet",
                 new Material[]{Material.LEATHER_HELMET, Material.CHAINMAIL_HELMET, Material.IRON_HELMET, Material.DIAMOND_HELMET},
                 upgrades.getOrDefault("helmet", 0),
                 6
         ));
 
-        // Chestplate - Slot 11
-        inv.setItem(11, createUpgradeItem(
+        // Chestplate - Slot 21
+        inv.setItem(21, createUpgradeItem(
                 "chestplate",
                 new Material[]{Material.LEATHER_CHESTPLATE, Material.CHAINMAIL_CHESTPLATE, Material.IRON_CHESTPLATE, Material.DIAMOND_CHESTPLATE},
                 upgrades.getOrDefault("chestplate", 0),
                 10
         ));
 
-        // Leggings - Slot 12
-        inv.setItem(12, createUpgradeItem(
+        // Leggings - Slot 22
+        inv.setItem(22, createUpgradeItem(
                 "leggings",
                 new Material[]{Material.LEATHER_LEGGINGS, Material.CHAINMAIL_LEGGINGS, Material.IRON_LEGGINGS, Material.DIAMOND_LEGGINGS},
                 upgrades.getOrDefault("leggings", 0),
                 8
         ));
 
-        // Boots - Slot 13
-        inv.setItem(13, createUpgradeItem(
+        // Boots - Slot 23
+        inv.setItem(23, createUpgradeItem(
                 "boots",
                 new Material[]{Material.LEATHER_BOOTS, Material.CHAINMAIL_BOOTS, Material.IRON_BOOTS, Material.DIAMOND_BOOTS},
                 upgrades.getOrDefault("boots", 0),
                 6
         ));
 
-        // Sword - Slot 19
-        inv.setItem(19, createUpgradeItem(
+        // === WEAPONS SECTION (Row 3) ===
+        // Header
+        inv.setItem(28, createSectionHeader("§c§lWeapon Upgrades"));
+
+        // Sword - Slot 38
+        inv.setItem(38, createUpgradeItem(
                 "sword",
                 new Material[]{Material.STONE_SWORD, Material.IRON_SWORD, Material.DIAMOND_SWORD},
                 upgrades.getOrDefault("sword", 0),
                 15
         ));
 
-        // Bow - Slot 20
-        inv.setItem(20, createBowUpgradeItem(upgrades.getOrDefault("bow", 0)));
+        // Bow - Slot 39
+        inv.setItem(39, createBowUpgradeItem(upgrades.getOrDefault("bow", 0)));
 
-        // Arrows - Slot 21
-        inv.setItem(21, createConsumableItem(Material.ARROW, 16, 5, "Arrows"));
+        // === CONSUMABLES SECTION (Row 4) ===
+        // Header
+        inv.setItem(46, createSectionHeader("§a§lConsumables"));
 
-        // Cake - Slot 22
-        inv.setItem(22, createConsumableItem(Material.CAKE, 1, 40, "Cake"));
+        // Arrows - Slot 47
+        inv.setItem(47, createConsumableItem(Material.ARROW, 16, 5, "Arrows"));
 
-        // Golden Apple - Slot 23
-        inv.setItem(23, createConsumableItem(Material.GOLDEN_APPLE, 1, 10, "Golden Apple"));
+        // Golden Apple - Slot 48
+        inv.setItem(48, createConsumableItem(Material.GOLDEN_APPLE, 1, 10, "Golden Apple"));
+
+        // Cake - Slot 49
+        inv.setItem(49, createConsumableItem(Material.CAKE, 1, 40, "Cake"));
+
+        // === DECORATIVE BORDER ===
+        ItemStack border = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        ItemMeta borderMeta = border.getItemMeta();
+        borderMeta.setDisplayName(" ");
+        border.setItemMeta(borderMeta);
+
+        // Top and bottom rows
+        for (int i = 0; i < 9; i++) {
+            inv.setItem(i, border);
+            inv.setItem(i + 45, border);
+        }
+
+        // Side columns
+        inv.setItem(9, border);
+        inv.setItem(17, border);
+        inv.setItem(18, border);
+        inv.setItem(26, border);
+        inv.setItem(27, border);
+        inv.setItem(35, border);
+        inv.setItem(36, border);
+        inv.setItem(44, border);
 
         player.openInventory(inv);
+    }
+
+    private ItemStack createSectionHeader(String title) {
+        ItemStack header = new ItemStack(Material.GOLD_NUGGET);
+        ItemMeta meta = header.getItemMeta();
+        meta.setDisplayName(title);
+        header.setItemMeta(meta);
+        return header;
     }
 
     private ItemStack createUpgradeItem(String type, Material[] materials, int currentLevel, int basePrice) {
