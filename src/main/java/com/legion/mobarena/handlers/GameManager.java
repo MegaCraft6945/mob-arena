@@ -168,18 +168,31 @@ public class GameManager {
         int mobCount = game.calculateMobsForRound(round);
         game.setMobsRemaining(mobCount);
 
+        // Check if this is a boss round
+        boolean isBossRound = round % 10 == 0;
+
         // Broadcast round start
         for (UUID playerId : game.getPlayers()) {
             Player player = Bukkit.getPlayer(playerId);
             if (player != null) {
-                player.sendMessage("§6§lRound " + round + " Started!");
-                player.sendTitle("§6Round " + round, "§eKill " + mobCount + " mobs!", 10, 70, 20);
-                player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5f, 1f);
+                if (isBossRound) {
+                    player.sendMessage("§c§l⚠ BOSS ROUND " + round + " ⚠");
+                    player.sendTitle("§c§lBOSS ROUND " + round, "§eDefeat the bosses!", 10, 70, 20);
+                    player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1f, 0.8f);
+                } else {
+                    player.sendMessage("§6§lRound " + round + " Started!");
+                    player.sendTitle("§6Round " + round, "§eKill " + mobCount + " mobs!", 10, 70, 20);
+                    player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5f, 1f);
+                }
             }
         }
 
-        // Spawn mobs
-        spawnRoundMobs(game);
+        // Spawn mobs or bosses
+        if (isBossRound) {
+            spawnBossRound(game);
+        } else {
+            spawnRoundMobs(game);
+        }
 
         // Start action bar updater
         startActionBarUpdater(game);
@@ -216,6 +229,34 @@ public class GameManager {
         }.runTaskTimer(plugin, 0L, 20L); // Spawn every second
     }
 
+    private void spawnBossRound(Game game) {
+        Arena arena = game.getArena();
+        int mobCount = game.getMobsRemaining();
+        int round = game.getCurrentRound();
+
+        new BukkitRunnable() {
+            int spawned = 0;
+
+            @Override
+            public void run() {
+                if (spawned >= mobCount || game.getState() != GameState.ACTIVE) {
+                    cancel();
+                    return;
+                }
+
+                // Spawn 2 bosses at a time (slower spawn rate for bosses)
+                for (int i = 0; i < 2 && spawned < mobCount; i++) {
+                    Location spawnLoc = getRandomSpawnLocation(arena);
+                    Entity boss = spawnBossMob(spawnLoc, round, spawned);
+                    if (boss != null) {
+                        game.addArenaMob(boss);
+                        spawned++;
+                    }
+                }
+            }
+        }.runTaskTimer(plugin, 0L, 30L); // Spawn every 1.5 seconds
+    }
+
     private Location getRandomSpawnLocation(Arena arena) {
         Location min = arena.getMin();
         Location max = arena.getMax();
@@ -226,6 +267,76 @@ public class GameManager {
         double y = min.getWorld().getHighestBlockYAt((int) x, (int) z) + 1;
 
         return new Location(min.getWorld(), x, y, z);
+    }
+
+    private Entity spawnBossMob(Location location, int round, int bossIndex) {
+        Random random = new Random();
+        EntityType type;
+
+        // Boss type selection based on round
+        if (round <= 20) {
+            // Early boss rounds: Wolves and basic bosses
+            EntityType[] bossTypes = {EntityType.WOLF, EntityType.ZOMBIE, EntityType.SKELETON, EntityType.SPIDER};
+            type = bossTypes[random.nextInt(bossTypes.length)];
+        } else if (round <= 30) {
+            // Mid boss rounds: Tougher bosses
+            EntityType[] bossTypes = {EntityType.WOLF, EntityType.IRON_GOLEM, EntityType.WITHER_SKELETON,
+                                     EntityType.BLAZE, EntityType.RAVAGER};
+            type = bossTypes[random.nextInt(bossTypes.length)];
+        } else {
+            // Late boss rounds: Most dangerous bosses
+            EntityType[] bossTypes = {EntityType.WOLF, EntityType.IRON_GOLEM, EntityType.RAVAGER,
+                                     EntityType.WITHER_SKELETON, EntityType.VINDICATOR, EntityType.EVOKER};
+            type = bossTypes[random.nextInt(bossTypes.length)];
+        }
+
+        Entity entity = location.getWorld().spawnEntity(location, type);
+
+        if (entity instanceof LivingEntity) {
+            LivingEntity boss = (LivingEntity) entity;
+            boss.setRemoveWhenFarAway(false);
+            boss.setPersistent(true);
+
+            // Boss name prefixes
+            String[] namePrefixes = {"§c§lBOSS", "§4§lELITE", "§c§lCHAMPION", "§4§lTERROR"};
+            String namePrefix = namePrefixes[random.nextInt(namePrefixes.length)];
+
+            // Set custom name based on type
+            String mobName = type.name().replace("_", " ");
+            boss.setCustomName(namePrefix + " §r§c" + mobName + " #" + (bossIndex + 1));
+            boss.setCustomNameVisible(true);
+
+            // Enhanced boss stats
+            double healthMultiplier = 2.0 + (round / 10.0);
+            boss.setMaxHealth(boss.getMaxHealth() * healthMultiplier);
+            boss.setHealth(boss.getMaxHealth());
+
+            // Special wolf enhancements
+            if (type == EntityType.WOLF) {
+                Wolf wolf = (Wolf) boss;
+                wolf.setAngry(true);
+                wolf.setAdult();
+                // Wolves are very aggressive bosses
+                boss.setMaxHealth(boss.getMaxHealth() * 1.5);
+                boss.setHealth(boss.getMaxHealth());
+            }
+
+            // Give equipment to humanoid bosses
+            if (type == EntityType.ZOMBIE || type == EntityType.SKELETON || type == EntityType.WITHER_SKELETON) {
+                boss.getEquipment().setItemInMainHand(new ItemStack(Material.DIAMOND_SWORD));
+                boss.getEquipment().setHelmet(new ItemStack(Material.DIAMOND_HELMET));
+                boss.getEquipment().setChestplate(new ItemStack(Material.DIAMOND_CHESTPLATE));
+                boss.getEquipment().setItemInMainHandDropChance(0f);
+                boss.getEquipment().setHelmetDropChance(0f);
+                boss.getEquipment().setChestplateDropChance(0f);
+            }
+
+            // Spawn particles around boss
+            location.getWorld().spawnParticle(Particle.FLAME, location, 30, 0.5, 0.5, 0.5, 0.05);
+            location.getWorld().playSound(location, Sound.ENTITY_WITHER_SPAWN, 0.5f, 1.2f);
+        }
+
+        return entity;
     }
 
     private Entity spawnMobForRound(Location location, int round) {
