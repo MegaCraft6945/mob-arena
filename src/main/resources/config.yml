@@ -21,7 +21,7 @@ game:
 # Round settings (Round 1 template)
 rounds:
   round-1:
-    mobs: 18
+    mobs: 10
     gems-reward: 5
   # Progression formula: mobs increase by 2 each round, gems increase by 1 every 5 rounds
   mob-increase-per-round: 2

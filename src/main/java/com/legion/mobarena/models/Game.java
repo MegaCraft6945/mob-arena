@@ -140,9 +140,9 @@ public class Game {
     }
 
     public int calculateMobsForRound(int round) {
-        // Round 1: 18 mobs
+        // Round 1: 10 mobs
         // Each round increases by 2 mobs
-        int baseMobs = 18;
+        int baseMobs = 10;
         int increasePerRound = 2;
         return baseMobs + ((round - 1) * increasePerRound);
     }

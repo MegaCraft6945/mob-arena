@@ -235,7 +235,16 @@ public class GameManager {
         int maxIndex = Math.min(round / 5 + 2, mobTypes.length);
         EntityType type = mobTypes[new Random().nextInt(maxIndex)];
 
-        return location.getWorld().spawnEntity(location, type);
+        Entity entity = location.getWorld().spawnEntity(location, type);
+
+        // Prevent mobs from despawning
+        if (entity instanceof LivingEntity) {
+            LivingEntity mob = (LivingEntity) entity;
+            mob.setRemoveWhenFarAway(false);
+            mob.setPersistent(true);
+        }
+
+        return entity;
     }
 
     private void startActionBarUpdater(Game game) {
