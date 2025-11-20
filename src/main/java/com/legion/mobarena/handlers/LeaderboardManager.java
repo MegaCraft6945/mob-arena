@@ -31,7 +31,7 @@ public class LeaderboardManager {
             List<LeaderboardData> entries = new ArrayList<>();
 
             // Get all player data and convert to leaderboard format
-            for (PlayerData data : plugin.getPlayerDataManager().getAllPlayerData()) {
+            for (PlayerData data : plugin.getPlayerDataManager().getAllPlayerData().values()) {
                 LeaderboardData entry = new LeaderboardData();
                 entry.playerName = data.getName();
                 entry.playerId = data.getUuid().toString();
