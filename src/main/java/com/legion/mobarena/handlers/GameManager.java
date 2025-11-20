@@ -609,11 +609,6 @@ public class GameManager {
         for (UUID playerId : game.getPlayers()) {
             Player player = Bukkit.getPlayer(playerId);
             if (player != null) {
-                // Update leaderboard with victory stats
-                int kills = game.getPlayerKills(playerId);
-                int gems = game.getPlayerGems(playerId);
-                plugin.getLeaderboardManager().updatePlayerStats(player, finalRound, kills, gems);
-
                 player.sendTitle("§6§lVICTORY!", "§eYou completed all 50 rounds!", 20, 100, 20);
                 player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
 
@@ -652,11 +647,6 @@ public class GameManager {
         if (game == null) return;
 
         int round = game.getCurrentRound();
-        int kills = game.getPlayerKills(player.getUniqueId());
-        int gems = game.getPlayerGems(player.getUniqueId());
-
-        // Update leaderboard with final stats
-        plugin.getLeaderboardManager().updatePlayerStats(player, round, kills, gems);
 
         game.removePlayer(player.getUniqueId());
         playerGames.remove(player.getUniqueId());
@@ -693,6 +683,9 @@ public class GameManager {
     }
 
     public void endGame(Game game) {
+        // Export leaderboard after game ends
+        plugin.getLeaderboardManager().saveLeaderboard();
+
         // Clean up
         game.clearArenaMobs();
         game.clearPlacedCakes();
