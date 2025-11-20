@@ -71,13 +71,13 @@ spawn:
 
 # Messages
 messages:
-  prefix: "&7[&eLegion&7] &r"
-  round-complete: "&aRound #{round} Complete! +{gems} Gems"
-  game-won: "&6&lCongratulations! You've completed all 50 rounds!"
-  game-lost: "&cGame Over! You were defeated on Round #{round}"
-  not-enough-gold: "&cYou don't have enough gold!"
-  purchased: "&aYou purchased {item}!"
-  arena-protected: "&cYou cannot break blocks in the arena!"
-  kit-purchased: "&aYou unlocked the {kit} kit!"
-  kit-selected: "&aYou selected the {kit} kit!"
-  not-enough-gems: "&cYou don't have enough gems!"
+  prefix: "§7[§eLegion§7] §r"
+  round-complete: "§aRound #{round} Complete! +{gems} Gems"
+  game-won: "§6§lCongratulations! You've completed all 50 rounds!"
+  game-lost: "§cGame Over! You were defeated on Round #{round}"
+  not-enough-gold: "§cYou don't have enough gold!"
+  purchased: "§aYou purchased {item}!"
+  arena-protected: "§cYou cannot break blocks in the arena!"
+  kit-purchased: "§aYou unlocked the {kit} kit!"
+  kit-selected: "§aYou selected the {kit} kit!"
+  not-enough-gems: "§cYou don't have enough gems!"
