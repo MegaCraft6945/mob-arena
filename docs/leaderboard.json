@@ -1,29 +1,11 @@
 [
   {
-    "playerName": "Example_Player",
-    "playerId": "00000000-0000-0000-0000-000000000000",
-    "highestRound": 25,
-    "totalGamesPlayed": 10,
-    "totalKills": 1250,
-    "totalGemsEarned": 150,
-    "lastPlayed": 1700000000000
-  },
-  {
-    "playerName": "Demo_Player",
-    "playerId": "00000000-0000-0000-0000-000000000001",
-    "highestRound": 20,
-    "totalGamesPlayed": 8,
-    "totalKills": 800,
-    "totalGemsEarned": 120,
-    "lastPlayed": 1700000000000
-  },
-  {
-    "playerName": "Test_Player",
-    "playerId": "00000000-0000-0000-0000-000000000002",
-    "highestRound": 15,
-    "totalGamesPlayed": 5,
-    "totalKills": 450,
-    "totalGemsEarned": 75,
-    "lastPlayed": 1700000000000
+    "playerName": "MegaCraft6945",
+    "playerId": "dd3c1528-5b15-46d4-8934-6816f60340c1",
+    "highestRound": 2,
+    "totalGamesPlayed": 1,
+    "totalKills": 10,
+    "totalGemsEarned": 5,
+    "lastPlayed": 1763679717670
   }
 ]
