@@ -30,8 +30,12 @@ public class DatabaseManager {
     }
 
     public void connect() {
-        if (!plugin.getConfig().getBoolean("database.enabled", true)) {
-            plugin.getLogger().warning("Database is disabled in config!");
+        if (!plugin.getConfig().getBoolean("database.enabled", false)) {
+            plugin.getLogger().info("=============================================");
+            plugin.getLogger().info("MySQL database is DISABLED in config.yml");
+            plugin.getLogger().info("Player data will NOT be saved between restarts!");
+            plugin.getLogger().info("To enable: Set database.enabled to true in config.yml");
+            plugin.getLogger().info("=============================================");
             return;
         }
 
@@ -56,10 +60,20 @@ public class DatabaseManager {
             }
         } catch (ClassNotFoundException e) {
             plugin.getLogger().severe("MySQL JDBC Driver not found!");
-            e.printStackTrace();
+            plugin.getLogger().severe("Please report this issue to the plugin developer.");
         } catch (SQLException e) {
+            plugin.getLogger().severe("=============================================");
             plugin.getLogger().severe("Could not connect to MySQL database!");
-            e.printStackTrace();
+            plugin.getLogger().severe("");
+            plugin.getLogger().severe("To use this plugin, you have two options:");
+            plugin.getLogger().severe("1. Set up a MySQL database and configure it in config.yml");
+            plugin.getLogger().severe("2. Disable MySQL in config.yml: database.enabled: false");
+            plugin.getLogger().severe("");
+            plugin.getLogger().severe("Current settings:");
+            plugin.getLogger().severe("  Host: " + host + ":" + port);
+            plugin.getLogger().severe("  Database: " + database);
+            plugin.getLogger().severe("  Username: " + username);
+            plugin.getLogger().severe("=============================================");
         }
     }
 

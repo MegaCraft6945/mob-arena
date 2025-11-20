@@ -1,8 +1,10 @@
 # Legion Mob Arena Configuration
 
 # Database settings
+# IMPORTANT: If you don't have MySQL set up, set 'enabled: false'
+# The plugin will work without MySQL but won't save player data between restarts
 database:
-  enabled: true
+  enabled: false  # Set to true if you have MySQL configured
   host: localhost
   port: 3306
   database: legion_mobarena
