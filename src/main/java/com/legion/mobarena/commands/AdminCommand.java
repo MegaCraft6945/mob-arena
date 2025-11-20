@@ -107,17 +107,28 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
     }
 
     private void sendHelp(Player player) {
-        player.sendMessage("§6§l=== Legion Mob Arena Admin Commands ===");
-        player.sendMessage("§e/legionadmin §7- Open admin menu");
-        player.sendMessage("§e/legionadmin create <name> §7- Start creating an arena");
-        player.sendMessage("§e/legionadmin setpos1 §7- Set position 1");
-        player.sendMessage("§e/legionadmin setpos2 §7- Set position 2");
-        player.sendMessage("§e/legionadmin setlobby §7- Set lobby spawn");
-        player.sendMessage("§e/legionadmin finish §7- Complete arena setup");
-        player.sendMessage("§e/legionadmin cancel §7- Cancel arena setup");
-        player.sendMessage("§e/legionadmin manage §7- Manage arenas");
-        player.sendMessage("§e/legionadmin delete <name> §7- Delete an arena");
-        player.sendMessage("§e/legionadmin reload §7- Reload configuration");
+        player.sendMessage("§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        player.sendMessage("§c§l    Legion Mob Arena Admin Commands");
+        player.sendMessage("§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        player.sendMessage("");
+        player.sendMessage("§6Arena Management:");
+        player.sendMessage("  §e/legionadmin §8» §7Open admin GUI menu");
+        player.sendMessage("  §e/legionadmin manage §8» §7List and manage all arenas");
+        player.sendMessage("  §e/legionadmin delete <name> §8» §7Delete an arena");
+        player.sendMessage("");
+        player.sendMessage("§6Arena Creation:");
+        player.sendMessage("  §e/legionadmin create <name> §8» §7Start arena setup");
+        player.sendMessage("  §e/legionadmin setpos1 §8» §7Set corner 1 of arena");
+        player.sendMessage("  §e/legionadmin setpos2 §8» §7Set corner 2 of arena");
+        player.sendMessage("  §e/legionadmin setlobby §8» §7Set lobby spawn point");
+        player.sendMessage("  §e/legionadmin finish §8» §7Complete arena setup");
+        player.sendMessage("  §e/legionadmin cancel §8» §7Cancel setup process");
+        player.sendMessage("");
+        player.sendMessage("§6Configuration:");
+        player.sendMessage("  §e/legionadmin reload §8» §7Reload config.yml");
+        player.sendMessage("");
+        player.sendMessage("§7§oTip: Use the GUI for easier arena management!");
+        player.sendMessage("§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     }
 
     @Override

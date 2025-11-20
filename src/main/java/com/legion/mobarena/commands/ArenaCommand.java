@@ -86,27 +86,48 @@ public class ArenaCommand implements CommandExecutor, TabCompleter {
     private void showStats(Player player) {
         PlayerData data = plugin.getPlayerDataManager().getPlayerData(player.getUniqueId());
         if (data == null) {
-            player.sendMessage("§cNo stats found!");
+            player.sendMessage("§cNo stats found! Play a game to start tracking your stats.");
             return;
         }
 
-        player.sendMessage("§6§l=== Your Legion Mob Arena Stats ===");
-        player.sendMessage("§eGems: §a" + data.getGems());
-        player.sendMessage("§eHighest Round: §a" + data.getHighestRound());
-        player.sendMessage("§eTotal Kills: §a" + data.getTotalKills());
-        player.sendMessage("§eTotal Deaths: §a" + data.getTotalDeaths());
-        player.sendMessage("§eGames Played: §a" + data.getGamesPlayed());
-        player.sendMessage("§eGames Won: §a" + data.getGamesWon());
-        player.sendMessage("§eUnlocked Kits: §a" + data.getUnlockedKits().size());
+        player.sendMessage("§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        player.sendMessage("§6§l       Your Legion Mob Arena Stats");
+        player.sendMessage("§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        player.sendMessage("");
+        player.sendMessage("§6Currency:");
+        player.sendMessage("  §eGems: §a" + data.getGems() + " §7(Use to unlock kits)");
+        player.sendMessage("");
+        player.sendMessage("§6Progress:");
+        player.sendMessage("  §eHighest Round: §a" + data.getHighestRound() + " §7/ §a50");
+        player.sendMessage("  §eUnlocked Kits: §a" + data.getUnlockedKits().size() + " §7/ §a9");
+        player.sendMessage("");
+        player.sendMessage("§6Combat Stats:");
+        player.sendMessage("  §eTotal Kills: §a" + data.getTotalKills());
+        player.sendMessage("  §eTotal Deaths: §a" + data.getTotalDeaths());
+        double kdr = data.getTotalDeaths() > 0 ? (double) data.getTotalKills() / data.getTotalDeaths() : data.getTotalKills();
+        player.sendMessage("  §eK/D Ratio: §a" + String.format("%.2f", kdr));
+        player.sendMessage("");
+        player.sendMessage("§6Game History:");
+        player.sendMessage("  §eGames Played: §a" + data.getGamesPlayed());
+        player.sendMessage("  §eGames Won: §a" + data.getGamesWon());
+        double winRate = data.getGamesPlayed() > 0 ? (double) data.getGamesWon() / data.getGamesPlayed() * 100 : 0;
+        player.sendMessage("  §eWin Rate: §a" + String.format("%.1f", winRate) + "%");
+        player.sendMessage("§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     }
 
     private void sendHelp(Player player) {
-        player.sendMessage("§6§l=== Legion Mob Arena Commands ===");
-        player.sendMessage("§e/legion §7- Open arena selection");
-        player.sendMessage("§e/legion join [arena] §7- Join an arena");
-        player.sendMessage("§e/legion leave §7- Leave current game");
-        player.sendMessage("§e/legion stats §7- View your stats");
-        player.sendMessage("§e/legion help §7- Show this help message");
+        player.sendMessage("§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        player.sendMessage("§6§l       Legion Mob Arena Commands");
+        player.sendMessage("§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        player.sendMessage("§e/legion §8» §7Open arena selection GUI");
+        player.sendMessage("§e/legion join [arena] §8» §7Join an arena directly");
+        player.sendMessage("§e/legion leave §8» §7Leave your current game");
+        player.sendMessage("§e/legion stats §8» §7View your statistics");
+        player.sendMessage("§e/legion help §8» §7Show this help message");
+        player.sendMessage("");
+        player.sendMessage("§7§oTip: Survive 50 rounds to win!");
+        player.sendMessage("§7§oCollect gold nuggets to upgrade your gear!");
+        player.sendMessage("§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     }
 
     @Override

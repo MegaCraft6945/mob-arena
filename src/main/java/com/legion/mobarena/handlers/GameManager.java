@@ -65,6 +65,19 @@ public class GameManager {
         player.teleport(arena.getLobby());
         player.setGameMode(GameMode.ADVENTURE);
 
+        // Welcome messages
+        player.sendMessage("");
+        player.sendMessage("§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        player.sendMessage("§6§l      Welcome to Legion Mob Arena!");
+        player.sendMessage("§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        player.sendMessage("§7Arena: §e" + arena.getName());
+        player.sendMessage("§7Players: §e" + game.getPlayers().size() + "§7/§e" + plugin.getConfig().getInt("game.max-players", 8));
+        player.sendMessage("");
+        player.sendMessage("§7§oSelect your kit to get ready!");
+        player.sendMessage("§7§oUse §e/legion leave §7to exit anytime.");
+        player.sendMessage("§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        player.sendMessage("");
+
         // Open kit selection
         openKitSelection(player);
     }
@@ -481,9 +494,17 @@ public class GameManager {
 
             Player player = Bukkit.getPlayer(playerId);
             if (player != null) {
-                player.sendMessage(plugin.getConfig().getString("messages.round-complete")
-                        .replace("{round}", String.valueOf(round))
-                        .replace("{gems}", String.valueOf(gems)));
+                player.sendMessage("");
+                player.sendMessage("§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+                player.sendMessage("§a§l         ROUND " + round + " COMPLETE!");
+                player.sendMessage("§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+                player.sendMessage("§7Reward: §a+" + gems + " Gems");
+                player.sendMessage("§7Next Round: §e" + (round + 1));
+                player.sendMessage("");
+                player.sendMessage("§e§lUpgrade shop is now open!");
+                player.sendMessage("§7Use your §6Gold Nuggets §7to upgrade gear");
+                player.sendMessage("§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+                player.sendMessage("");
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
 
                 // Update persistent gems
@@ -540,7 +561,20 @@ public class GameManager {
             if (player != null) {
                 player.sendTitle("§6§lVICTORY!", "§eYou completed all 50 rounds!", 20, 100, 20);
                 player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
-                player.sendMessage(plugin.getConfig().getString("messages.game-won"));
+
+                player.sendMessage("");
+                player.sendMessage("§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+                player.sendMessage("§6§l            VICTORY!");
+                player.sendMessage("§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+                player.sendMessage("§e§lCongratulations!");
+                player.sendMessage("§7You have completed all §e50 rounds§7!");
+                player.sendMessage("");
+                player.sendMessage("§7Arena: §e" + game.getArena().getName());
+                player.sendMessage("§7Players: §e" + game.getPlayers().size());
+                player.sendMessage("");
+                player.sendMessage("§a§lYou are a true champion!");
+                player.sendMessage("§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+                player.sendMessage("");
 
                 var playerData = plugin.getPlayerDataManager().getPlayerData(playerId);
                 if (playerData != null) {
@@ -562,12 +596,23 @@ public class GameManager {
         Game game = getPlayerGame(player.getUniqueId());
         if (game == null) return;
 
+        int round = game.getCurrentRound();
         game.removePlayer(player.getUniqueId());
         playerGames.remove(player.getUniqueId());
+
+        player.sendMessage("");
+        player.sendMessage("§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        player.sendMessage("§c§l           GAME OVER");
+        player.sendMessage("§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        player.sendMessage("§7You were eliminated on §eRound " + round);
+        player.sendMessage("§7Better luck next time!");
+        player.sendMessage("§8§m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        player.sendMessage("");
 
         var playerData = plugin.getPlayerDataManager().getPlayerData(player.getUniqueId());
         if (playerData != null) {
             playerData.addDeath();
+            playerData.addGamePlayed();
         }
 
         // Check if all players are dead
