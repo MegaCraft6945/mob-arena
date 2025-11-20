@@ -8,6 +8,8 @@ import com.legion.mobarena.handlers.ArenaManager;
 import com.legion.mobarena.handlers.KitManager;
 import com.legion.mobarena.handlers.PlayerDataManager;
 import com.legion.mobarena.listeners.*;
+import com.legion.mobarena.placeholders.LegionPlaceholders;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class LegionMobArena extends JavaPlugin {
@@ -42,6 +44,12 @@ public class LegionMobArena extends JavaPlugin {
 
         // Register listeners
         registerListeners();
+
+        // Register PlaceholderAPI expansion
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new LegionPlaceholders(this).register();
+            getLogger().info("PlaceholderAPI expansion registered!");
+        }
 
         getLogger().info("Legion Mob Arena has been enabled!");
     }

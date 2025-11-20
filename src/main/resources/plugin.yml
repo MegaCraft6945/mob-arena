@@ -5,6 +5,7 @@ api-version: '1.20'
 author: Legion
 description: A comprehensive Mob Arena plugin for Minecraft
 website: https://github.com/MegaCraft6945/mob-arena
+softdepend: [PlaceholderAPI, DecentHolograms]
 
 commands:
   legion:

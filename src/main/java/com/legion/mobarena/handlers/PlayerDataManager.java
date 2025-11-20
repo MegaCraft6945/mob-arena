@@ -80,6 +80,9 @@ public class PlayerDataManager {
                 rs.close();
                 ps.close();
 
+                // Always ensure the free warrior kit is unlocked
+                data.unlockKit("warrior");
+
                 // Cache the data
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     playerDataCache.put(uuid, data);
@@ -161,5 +164,85 @@ public class PlayerDataManager {
         for (UUID uuid : playerDataCache.keySet()) {
             savePlayerData(uuid);
         }
+    }
+
+    // Leaderboard methods
+    public Map<String, Integer> getTopKills(int limit) {
+        Map<String, Integer> topKills = new HashMap<>();
+        try {
+            Connection conn = plugin.getDatabaseManager().getConnection();
+            if (conn == null) return topKills;
+
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT name, total_kills FROM player_data ORDER BY total_kills DESC LIMIT ?"
+            );
+            ps.setInt(1, limit);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                topKills.put(rs.getString("name"), rs.getInt("total_kills"));
+            }
+
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Error fetching top kills");
+            e.printStackTrace();
+        }
+        return topKills;
+    }
+
+    public Map<String, Integer> getTopGamesPlayed(int limit) {
+        Map<String, Integer> topGamesPlayed = new HashMap<>();
+        try {
+            Connection conn = plugin.getDatabaseManager().getConnection();
+            if (conn == null) return topGamesPlayed;
+
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT name, games_played FROM player_data ORDER BY games_played DESC LIMIT ?"
+            );
+            ps.setInt(1, limit);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                topGamesPlayed.put(rs.getString("name"), rs.getInt("games_played"));
+            }
+
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Error fetching top games played");
+            e.printStackTrace();
+        }
+        return topGamesPlayed;
+    }
+
+    public Map<String, Integer> getTopWins(int limit) {
+        Map<String, Integer> topWins = new HashMap<>();
+        try {
+            Connection conn = plugin.getDatabaseManager().getConnection();
+            if (conn == null) return topWins;
+
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT name, games_won FROM player_data ORDER BY games_won DESC LIMIT ?"
+            );
+            ps.setInt(1, limit);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                topWins.put(rs.getString("name"), rs.getInt("games_won"));
+            }
+
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Error fetching top wins");
+            e.printStackTrace();
+        }
+        return topWins;
+    }
+
+    public Map<UUID, PlayerData> getAllPlayerData() {
+        return new HashMap<>(playerDataCache);
     }
 }

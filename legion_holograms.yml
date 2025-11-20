@@ -1,0 +1,147 @@
+# ============================================================
+# Legion Mob Arena - DecentHolograms Configuration
+# ============================================================
+#
+# Instructions:
+# 1. Place this file in: plugins/DecentHolograms/holograms/
+# 2. Rename it to: legion_stats.yml (or any name you prefer)
+# 3. Set the location where you want the holograms to appear
+# 4. Reload DecentHolograms with: /dh reload
+#
+# Location Format:
+# Change the 'location' values below to your desired coordinates
+# Format: world:x:y:z
+# Example: world:0:100:0
+# ============================================================
+
+# ============================================================
+# TOP KILLS LEADERBOARD
+# ============================================================
+legion_top_kills:
+  enabled: true
+  # CHANGE THIS LOCATION TO WHERE YOU WANT THE HOLOGRAM
+  location: world:0:100:0
+  down-origin: false
+  display-range: 48
+  update-range: 48
+  update-interval: 100
+  pages:
+    1:
+      lines:
+        # Header
+        - '&8&m━━━━━━━━━━━━━━━━━━━━━━'
+        - '&6&l⚔ TOP KILLS ⚔'
+        - '&8&m━━━━━━━━━━━━━━━━━━━━━━'
+        - ''
+        # Top 10 players
+        - '&e#1 &f%legion_top_kills_1_name% &7- &a%legion_top_kills_1_value%'
+        - '&e#2 &f%legion_top_kills_2_name% &7- &a%legion_top_kills_2_value%'
+        - '&e#3 &f%legion_top_kills_3_name% &7- &a%legion_top_kills_3_value%'
+        - '&e#4 &f%legion_top_kills_4_name% &7- &a%legion_top_kills_4_value%'
+        - '&e#5 &f%legion_top_kills_5_name% &7- &a%legion_top_kills_5_value%'
+        - '&e#6 &f%legion_top_kills_6_name% &7- &a%legion_top_kills_6_value%'
+        - '&e#7 &f%legion_top_kills_7_name% &7- &a%legion_top_kills_7_value%'
+        - '&e#8 &f%legion_top_kills_8_name% &7- &a%legion_top_kills_8_value%'
+        - '&e#9 &f%legion_top_kills_9_name% &7- &a%legion_top_kills_9_value%'
+        - '&e#10 &f%legion_top_kills_10_name% &7- &a%legion_top_kills_10_value%'
+        - ''
+        - '&8&m━━━━━━━━━━━━━━━━━━━━━━'
+
+# ============================================================
+# TOP GAMES PLAYED LEADERBOARD
+# ============================================================
+legion_top_games:
+  enabled: true
+  # CHANGE THIS LOCATION TO WHERE YOU WANT THE HOLOGRAM
+  location: world:10:100:0
+  down-origin: false
+  display-range: 48
+  update-range: 48
+  update-interval: 100
+  pages:
+    1:
+      lines:
+        # Header
+        - '&8&m━━━━━━━━━━━━━━━━━━━━━━'
+        - '&b&l🎮 TOP GAMES PLAYED 🎮'
+        - '&8&m━━━━━━━━━━━━━━━━━━━━━━'
+        - ''
+        # Top 10 players
+        - '&e#1 &f%legion_top_games_1_name% &7- &a%legion_top_games_1_value%'
+        - '&e#2 &f%legion_top_games_2_name% &7- &a%legion_top_games_2_value%'
+        - '&e#3 &f%legion_top_games_3_name% &7- &a%legion_top_games_3_value%'
+        - '&e#4 &f%legion_top_games_4_name% &7- &a%legion_top_games_4_value%'
+        - '&e#5 &f%legion_top_games_5_name% &7- &a%legion_top_games_5_value%'
+        - '&e#6 &f%legion_top_games_6_name% &7- &a%legion_top_games_6_value%'
+        - '&e#7 &f%legion_top_games_7_name% &7- &a%legion_top_games_7_value%'
+        - '&e#8 &f%legion_top_games_8_name% &7- &a%legion_top_games_8_value%'
+        - '&e#9 &f%legion_top_games_9_name% &7- &a%legion_top_games_9_value%'
+        - '&e#10 &f%legion_top_games_10_name% &7- &a%legion_top_games_10_value%'
+        - ''
+        - '&8&m━━━━━━━━━━━━━━━━━━━━━━'
+
+# ============================================================
+# TOP WINS LEADERBOARD
+# ============================================================
+legion_top_wins:
+  enabled: true
+  # CHANGE THIS LOCATION TO WHERE YOU WANT THE HOLOGRAM
+  location: world:20:100:0
+  down-origin: false
+  display-range: 48
+  update-range: 48
+  update-interval: 100
+  pages:
+    1:
+      lines:
+        # Header
+        - '&8&m━━━━━━━━━━━━━━━━━━━━━━'
+        - '&a&l👑 TOP WINS 👑'
+        - '&8&m━━━━━━━━━━━━━━━━━━━━━━'
+        - ''
+        # Top 10 players
+        - '&e#1 &f%legion_top_wins_1_name% &7- &a%legion_top_wins_1_value%'
+        - '&e#2 &f%legion_top_wins_2_name% &7- &a%legion_top_wins_2_value%'
+        - '&e#3 &f%legion_top_wins_3_name% &7- &a%legion_top_wins_3_value%'
+        - '&e#4 &f%legion_top_wins_4_name% &7- &a%legion_top_wins_4_value%'
+        - '&e#5 &f%legion_top_wins_5_name% &7- &a%legion_top_wins_5_value%'
+        - '&e#6 &f%legion_top_wins_6_name% &7- &a%legion_top_wins_6_value%'
+        - '&e#7 &f%legion_top_wins_7_name% &7- &a%legion_top_wins_7_value%'
+        - '&e#8 &f%legion_top_wins_8_name% &7- &a%legion_top_wins_8_value%'
+        - '&e#9 &f%legion_top_wins_9_name% &7- &a%legion_top_wins_9_value%'
+        - '&e#10 &f%legion_top_wins_10_name% &7- &a%legion_top_wins_10_value%'
+        - ''
+        - '&8&m━━━━━━━━━━━━━━━━━━━━━━'
+
+# ============================================================
+# PLAYER STATS HOLOGRAM (OPTIONAL)
+# ============================================================
+# This shows individual player stats when they're nearby
+legion_player_stats:
+  enabled: false
+  # CHANGE THIS LOCATION TO WHERE YOU WANT THE HOLOGRAM
+  location: world:30:100:0
+  down-origin: false
+  display-range: 48
+  update-range: 48
+  update-interval: 20
+  pages:
+    1:
+      lines:
+        - '&8&m━━━━━━━━━━━━━━━━━━━━━━'
+        - '&6&lYour Legion Stats'
+        - '&8&m━━━━━━━━━━━━━━━━━━━━━━'
+        - ''
+        - '&eGems: &a%legion_gems%'
+        - '&eHighest Round: &a%legion_highest_round%'
+        - '&eTotal Kills: &a%legion_kills%'
+        - '&eTotal Deaths: &a%legion_deaths%'
+        - '&eK/D Ratio: &a%legion_kdr%'
+        - ''
+        - '&eGames Played: &a%legion_games_played%'
+        - '&eGames Won: &a%legion_wins%'
+        - '&eWin Rate: &a%legion_winrate%%'
+        - ''
+        - '&eUnlocked Kits: &a%legion_unlocked_kits%&7/&a9'
+        - ''
+        - '&8&m━━━━━━━━━━━━━━━━━━━━━━'
