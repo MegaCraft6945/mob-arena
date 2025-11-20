@@ -170,7 +170,7 @@ public class UpgradeShopGUI {
         int goldNuggets = countGoldNuggets(player);
         String goldDisplay = goldNuggets >= 1000 ? String.format("%.1fK", goldNuggets / 1000.0) : String.valueOf(goldNuggets);
 
-        Inventory inv = Bukkit.createInventory(null, 45, "§8§l✦ §c§lWeapons Shop §8§l✦ §e" + goldDisplay + "G");
+        Inventory inv = Bukkit.createInventory(null, 54, "§8§l✦ §c§lWeapons Shop §8§l✦ §e" + goldDisplay + "G");
 
         Map<String, Integer> upgrades = playerUpgradeLevels.get(player);
 
@@ -180,22 +180,64 @@ public class UpgradeShopGUI {
         borderMeta.setDisplayName(" ");
         border.setItemMeta(borderMeta);
 
-        for (int i = 0; i < 45; i++) {
-            if (i < 9 || i >= 36 || i % 9 == 0 || i % 9 == 8) {
+        for (int i = 0; i < 54; i++) {
+            if (i < 9 || i >= 45 || i % 9 == 0 || i % 9 == 8) {
                 inv.setItem(i, border);
             }
         }
 
-        // Sword - Slot 21
-        inv.setItem(21, createUpgradeItem(
+        // === ROW 2: Base Weapons ===
+        // Sword - Slot 20
+        inv.setItem(20, createUpgradeItem(
                 "sword",
                 new Material[]{Material.STONE_SWORD, Material.IRON_SWORD, Material.DIAMOND_SWORD},
                 upgrades.getOrDefault("sword", 0),
                 15
         ));
 
-        // Bow - Slot 23
-        inv.setItem(23, createBowUpgradeItem(upgrades.getOrDefault("bow", 0)));
+        // Bow - Slot 24
+        inv.setItem(24, createBowUpgradeItem(upgrades.getOrDefault("bow", 0)));
+
+        // === ROW 3: Sword Enchantments ===
+        // Sharpness
+        inv.setItem(29, createEnchantmentUpgradeItem(
+                "sharpness",
+                Enchantment.DAMAGE_ALL,
+                Material.NETHER_STAR,
+                upgrades.getOrDefault("sharpness", 0),
+                5,
+                15
+        ));
+
+        // Sweeping Edge
+        inv.setItem(30, createEnchantmentUpgradeItem(
+                "sweeping",
+                Enchantment.SWEEPING_EDGE,
+                Material.IRON_SWORD,
+                upgrades.getOrDefault("sweeping", 0),
+                3,
+                20
+        ));
+
+        // Looting
+        inv.setItem(31, createEnchantmentUpgradeItem(
+                "looting",
+                Enchantment.LOOT_BONUS_MOBS,
+                Material.GOLD_INGOT,
+                upgrades.getOrDefault("looting", 0),
+                3,
+                25
+        ));
+
+        // Fire Aspect
+        inv.setItem(32, createEnchantmentUpgradeItem(
+                "fire_aspect",
+                Enchantment.FIRE_ASPECT,
+                Material.BLAZE_POWDER,
+                upgrades.getOrDefault("fire_aspect", 0),
+                2,
+                30
+        ));
 
         // Back button
         ItemStack back = new ItemStack(Material.ARROW);
@@ -203,7 +245,7 @@ public class UpgradeShopGUI {
         backMeta.setDisplayName("§c§l← Back to Shop");
         backMeta.setLore(Arrays.asList("§7Return to main shop"));
         back.setItemMeta(backMeta);
-        inv.setItem(40, back);
+        inv.setItem(49, back);
 
         player.openInventory(inv);
     }
@@ -371,6 +413,62 @@ public class UpgradeShopGUI {
         return item;
     }
 
+    private ItemStack createEnchantmentUpgradeItem(String name, Enchantment enchant, Material displayMaterial, int currentLevel, int maxLevel, int basePrice) {
+        String enchantName = name.substring(0, 1).toUpperCase() + name.substring(1).replace("_", " ");
+
+        if (currentLevel >= maxLevel) {
+            // Max level
+            ItemStack item = new ItemStack(displayMaterial);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§a" + enchantName + " §7(§aMAX§7)");
+            meta.setLore(Arrays.asList(
+                    "",
+                    "§7Current: §e" + enchantName + " " + toRoman(maxLevel),
+                    "",
+                    "§a§lMAX LEVEL"
+            ));
+            item.setItemMeta(meta);
+            return item;
+        }
+
+        int nextLevel = currentLevel + 1;
+        int price = basePrice * nextLevel;
+
+        ItemStack item = new ItemStack(displayMaterial);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName("§eUpgrade " + enchantName);
+
+        ArrayList<String> lore = new ArrayList<>();
+        if (currentLevel == 0) {
+            lore.add("§7Current: §eNone");
+            lore.add("§7Next: §e" + enchantName + " " + toRoman(nextLevel));
+        } else {
+            lore.add("§7Current: §e" + enchantName + " " + toRoman(currentLevel));
+            lore.add("§7Next: §e" + enchantName + " " + toRoman(nextLevel));
+        }
+        lore.add("");
+
+        // Add enchantment description
+        if (name.equals("sharpness")) {
+            lore.add("§7Increases damage to all mobs");
+        } else if (name.equals("sweeping")) {
+            lore.add("§7Increases sweep attack damage");
+        } else if (name.equals("looting")) {
+            lore.add("§7Increases gold drops from mobs");
+        } else if (name.equals("fire_aspect")) {
+            lore.add("§7Sets mobs on fire");
+        }
+
+        lore.add("");
+        lore.add("§6Cost: " + price + " Gold");
+        lore.add("");
+        lore.add("§eClick to upgrade!");
+
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        return item;
+    }
+
     public void handleClick(Player player, ItemStack clicked, Game game) {
         if (clicked == null || !clicked.hasItemMeta()) return;
 
@@ -396,6 +494,14 @@ public class UpgradeShopGUI {
         } else if (displayName.contains("Bow")) {
             // Handles both "Buy Bow" and "Upgrade Bow"
             handleBowUpgrade(player, game);
+        } else if (displayName.contains("Upgrade Sharpness")) {
+            handleEnchantmentUpgrade(player, game, "sharpness", Enchantment.DAMAGE_ALL, 5, 15);
+        } else if (displayName.contains("Upgrade Sweeping")) {
+            handleEnchantmentUpgrade(player, game, "sweeping", Enchantment.SWEEPING_EDGE, 3, 20);
+        } else if (displayName.contains("Upgrade Looting")) {
+            handleEnchantmentUpgrade(player, game, "looting", Enchantment.LOOT_BONUS_MOBS, 3, 25);
+        } else if (displayName.contains("Upgrade Fire aspect")) {
+            handleEnchantmentUpgrade(player, game, "fire_aspect", Enchantment.FIRE_ASPECT, 2, 30);
         } else if (displayName.contains("Arrows")) {
             handleConsumablePurchase(player, game, new ItemStack(Material.ARROW, 16), 5);
         } else if (displayName.contains("Cake")) {
@@ -443,7 +549,7 @@ public class UpgradeShopGUI {
         }
 
         player.sendMessage(plugin.getMessage("purchased").replace("{item}", capitalize(type)));
-        openShop(player, game);
+        openArmorShop(player, game);
     }
 
     private void handleSwordUpgrade(Player player, Game game) {
@@ -466,18 +572,35 @@ public class UpgradeShopGUI {
 
         upgrades.put("sword", nextLevel);
 
-        // Remove old sword and give new one (unbreakable)
-        player.getInventory().remove(swords[currentLevel]);
+        // Find and remove old sword, preserving enchantments
+        ItemStack oldSword = null;
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item != null && item.getType() == swords[currentLevel]) {
+                oldSword = item;
+                player.getInventory().remove(item);
+                break;
+            }
+        }
+
+        // Create new sword and transfer enchantments
         ItemStack newSword = new ItemStack(swords[nextLevel]);
         ItemMeta swordMeta = newSword.getItemMeta();
         if (swordMeta != null) {
             swordMeta.setUnbreakable(true);
             newSword.setItemMeta(swordMeta);
         }
+
+        // Transfer enchantments from old sword if it had any
+        if (oldSword != null && oldSword.hasItemMeta() && oldSword.getItemMeta().hasEnchants()) {
+            for (Map.Entry<Enchantment, Integer> entry : oldSword.getEnchantments().entrySet()) {
+                newSword.addUnsafeEnchantment(entry.getKey(), entry.getValue());
+            }
+        }
+
         player.getInventory().addItem(newSword);
 
         player.sendMessage(plugin.getMessage("purchased").replace("{item}", "Sword"));
-        openShop(player, game);
+        openWeaponsShop(player, game);
     }
 
     private void handleBowUpgrade(Player player, Game game) {
@@ -528,7 +651,54 @@ public class UpgradeShopGUI {
 
         String itemName = (nextLevel == 1) ? "Bow" : "Bow Power " + toRoman(nextLevel - 1);
         player.sendMessage(plugin.getMessage("purchased").replace("{item}", itemName));
-        openShop(player, game);
+        openWeaponsShop(player, game);
+    }
+
+    private void handleEnchantmentUpgrade(Player player, Game game, String enchantName, Enchantment enchant, int maxLevel, int basePrice) {
+        Map<String, Integer> upgrades = playerUpgradeLevels.get(player);
+        int currentLevel = upgrades.getOrDefault(enchantName, 0);
+
+        if (currentLevel >= maxLevel) {
+            player.sendMessage("§cYou already have the maximum level for this enchantment!");
+            return;
+        }
+
+        int nextLevel = currentLevel + 1;
+        int price = basePrice * nextLevel;
+
+        if (!removeGoldNuggets(player, price)) {
+            player.sendMessage(plugin.getMessage("not-enough-gold"));
+            return;
+        }
+
+        upgrades.put(enchantName, nextLevel);
+
+        // Find the player's sword and add/upgrade the enchantment
+        ItemStack sword = null;
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item != null && (item.getType() == Material.STONE_SWORD ||
+                item.getType() == Material.IRON_SWORD ||
+                item.getType() == Material.DIAMOND_SWORD)) {
+                sword = item;
+                break;
+            }
+        }
+
+        if (sword != null) {
+            // Add or update the enchantment
+            sword.addUnsafeEnchantment(enchant, nextLevel);
+
+            // Make sure it's unbreakable
+            ItemMeta swordMeta = sword.getItemMeta();
+            if (swordMeta != null) {
+                swordMeta.setUnbreakable(true);
+                sword.setItemMeta(swordMeta);
+            }
+        }
+
+        String displayName = enchantName.substring(0, 1).toUpperCase() + enchantName.substring(1).replace("_", " ");
+        player.sendMessage(plugin.getMessage("purchased").replace("{item}", displayName + " " + toRoman(nextLevel)));
+        openWeaponsShop(player, game);
     }
 
     private void handleConsumablePurchase(Player player, Game game, ItemStack item, int price) {
@@ -540,7 +710,7 @@ public class UpgradeShopGUI {
         player.getInventory().addItem(item);
 
         player.sendMessage(plugin.getMessage("purchased").replace("{item}", item.getType().name()));
-        openShop(player, game);
+        openConsumablesShop(player, game);
     }
 
     private String capitalize(String str) {
