@@ -20,6 +20,11 @@ public class PlayerQuitListener implements Listener {
             plugin.getGameManager().onPlayerDeath(event.getPlayer());
         }
 
+        // Cancel arena setup if player is in one
+        if (plugin.getAdminMenu() != null && plugin.getAdminMenu().getSetupSession(event.getPlayer()) != null) {
+            plugin.getAdminMenu().cancelSetup(event.getPlayer());
+        }
+
         // Save and unload player data
         plugin.getPlayerDataManager().unloadPlayerData(event.getPlayer().getUniqueId());
     }

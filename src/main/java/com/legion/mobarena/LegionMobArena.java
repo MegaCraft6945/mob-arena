@@ -3,6 +3,7 @@ package com.legion.mobarena;
 import com.legion.mobarena.commands.AdminCommand;
 import com.legion.mobarena.commands.ArenaCommand;
 import com.legion.mobarena.database.DatabaseManager;
+import com.legion.mobarena.gui.AdminMenuGUI;
 import com.legion.mobarena.handlers.GameManager;
 import com.legion.mobarena.handlers.ArenaManager;
 import com.legion.mobarena.handlers.KitManager;
@@ -26,6 +27,7 @@ public class LegionMobArena extends JavaPlugin {
     private PlayerDataManager playerDataManager;
     private FileConfiguration messagesConfig;
     private PlayerInteractListener playerInteractListener;
+    private AdminMenuGUI adminMenuGUI;
 
     @Override
     public void onEnable() {
@@ -49,7 +51,9 @@ public class LegionMobArena extends JavaPlugin {
 
         // Register commands
         getCommand("legion").setExecutor(new ArenaCommand(this));
-        getCommand("legionadmin").setExecutor(new AdminCommand(this));
+        AdminCommand adminCommand = new AdminCommand(this);
+        this.adminMenuGUI = adminCommand.getAdminMenu();
+        getCommand("legionadmin").setExecutor(adminCommand);
 
         // Register listeners
         registerListeners();
@@ -94,6 +98,7 @@ public class LegionMobArena extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new InventoryClickListener(this), this);
         getServer().getPluginManager().registerEvents(new InventoryDragListener(this), this);
+        getServer().getPluginManager().registerEvents(new AdminBlockClickListener(this), this);
     }
 
     public PlayerInteractListener getPlayerInteractListener() {
@@ -141,5 +146,9 @@ public class LegionMobArena extends JavaPlugin {
 
     public String getMessage(String path) {
         return messagesConfig.getString(path, "§cMessage not found: " + path);
+    }
+
+    public AdminMenuGUI getAdminMenu() {
+        return adminMenuGUI;
     }
 }
