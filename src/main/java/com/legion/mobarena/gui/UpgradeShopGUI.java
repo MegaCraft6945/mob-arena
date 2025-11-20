@@ -190,6 +190,11 @@ public class UpgradeShopGUI {
 
         String displayName = clicked.getItemMeta().getDisplayName();
         int gold = game.getPlayerGold(player.getUniqueId());
+
+        // Initialize player upgrades if not exists
+        if (!playerUpgradeLevels.containsKey(player)) {
+            playerUpgradeLevels.put(player, new HashMap<>());
+        }
         Map<String, Integer> upgrades = playerUpgradeLevels.get(player);
 
         // Check what was clicked
