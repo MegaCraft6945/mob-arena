@@ -17,14 +17,16 @@ public class EntityDeathListener implements Listener {
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
+        // Always clear drops for arena mobs
+        if (plugin.getGameManager().isArenaMob(event.getEntity())) {
+            event.getDrops().clear();
+            event.setDroppedExp(0);
+        }
+
         if (event.getEntity().getKiller() instanceof Player) {
             Player killer = event.getEntity().getKiller();
 
             if (plugin.getGameManager().isPlayerInGame(killer.getUniqueId())) {
-                // Prevent normal drops
-                event.getDrops().clear();
-                event.setDroppedExp(0);
-
                 // Handle mob kill in game
                 plugin.getGameManager().onMobKilled(event.getEntity(), killer);
 
@@ -34,6 +36,9 @@ public class EntityDeathListener implements Listener {
                     data.addKill();
                 }
             }
+        } else {
+            // Mob killed by non-player (e.g., another mob, environment)
+            plugin.getGameManager().onMobKilledByOther(event.getEntity());
         }
     }
 }

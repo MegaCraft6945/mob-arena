@@ -440,4 +440,34 @@ public class GameManager {
             endGame(game);
         }
     }
+
+    public boolean isArenaMob(Entity entity) {
+        for (Game game : activeGames.values()) {
+            if (game.getArenaMobs().contains(entity)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void onMobKilledByOther(Entity mob) {
+        // Find which game this mob belongs to
+        for (Game game : activeGames.values()) {
+            if (game.getArenaMobs().contains(mob)) {
+                game.removeArenaMob(mob);
+                game.decrementMobsRemaining();
+
+                // Spawn replacement mob to maintain count
+                if (game.getState() == GameState.ACTIVE) {
+                    Location spawnLoc = getRandomSpawnLocation(game.getArena());
+                    Entity replacement = spawnMobForRound(spawnLoc, game.getCurrentRound());
+                    if (replacement != null) {
+                        game.addArenaMob(replacement);
+                        game.setMobsRemaining(game.getMobsRemaining() + 1); // Compensate for decrement
+                    }
+                }
+                break;
+            }
+        }
+    }
 }
