@@ -450,6 +450,9 @@ public class GameManager {
                 }
 
                 Arena arena = game.getArena();
+                int round = game.getCurrentRound();
+                boolean isBossRound = round % 10 == 0;
+
                 // Check each mob in the game
                 for (Entity mob : new ArrayList<>(game.getArenaMobs())) {
                     if (mob == null || mob.isDead()) {
@@ -458,36 +461,33 @@ public class GameManager {
                     }
 
                     Location mobLoc = mob.getLocation();
+                    Location blockBelow = mobLoc.clone().subtract(0, 1, 0);
 
-                    // Only teleport if mob is significantly outside arena (10+ blocks)
-                    if (!arena.contains(mobLoc)) {
-                        // Calculate distance from arena boundary
-                        Location min = arena.getMin();
-                        Location max = arena.getMax();
+                    // Only act if mob is standing on grass block AND outside arena
+                    if (blockBelow.getBlock().getType() == Material.GRASS_BLOCK && !arena.contains(mobLoc)) {
+                        // Remove the escaped mob from tracking
+                        game.removeArenaMob(mob);
 
-                        double distanceOutside = 0;
+                        // Kill the mob quietly
+                        mob.remove();
 
-                        if (mobLoc.getX() < min.getX()) {
-                            distanceOutside = Math.max(distanceOutside, min.getX() - mobLoc.getX());
-                        } else if (mobLoc.getX() > max.getX()) {
-                            distanceOutside = Math.max(distanceOutside, mobLoc.getX() - max.getX());
+                        // Spawn replacement mob in arena
+                        Location spawnLoc = getRandomSpawnLocation(arena);
+                        Entity replacement;
+
+                        if (isBossRound) {
+                            replacement = spawnBossMob(spawnLoc, round, game.getArenaMobs().size());
+                        } else {
+                            replacement = spawnMobForRound(spawnLoc, round);
                         }
 
-                        if (mobLoc.getZ() < min.getZ()) {
-                            distanceOutside = Math.max(distanceOutside, min.getZ() - mobLoc.getZ());
-                        } else if (mobLoc.getZ() > max.getZ()) {
-                            distanceOutside = Math.max(distanceOutside, mobLoc.getZ() - max.getZ());
-                        }
-
-                        // Only teleport if mob is more than 10 blocks outside
-                        if (distanceOutside > 10.0) {
-                            Location spawnLoc = getRandomSpawnLocation(arena);
-                            mob.teleport(spawnLoc);
+                        if (replacement != null) {
+                            game.addArenaMob(replacement);
                         }
                     }
                 }
             }
-        }.runTaskTimer(plugin, 100L, 100L); // Check every 5 seconds (less frequent)
+        }.runTaskTimer(plugin, 60L, 60L); // Check every 3 seconds
     }
 
     public void onMobKilled(Entity mob, Player killer) {
