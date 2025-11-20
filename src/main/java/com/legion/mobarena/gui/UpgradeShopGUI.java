@@ -139,7 +139,8 @@ public class UpgradeShopGUI {
     }
 
     private ItemStack createBowUpgradeItem(int currentLevel) {
-        if (currentLevel >= 5) {
+        // Level 0 = No bow, Level 1 = Normal bow, Level 2-6 = Power I-V
+        if (currentLevel >= 6) {
             ItemStack item = new ItemStack(Material.BOW);
             item.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, 5);
             ItemMeta meta = item.getItemMeta();
@@ -150,27 +151,50 @@ public class UpgradeShopGUI {
         }
 
         int nextLevel = currentLevel + 1;
-        int price = 10 * (nextLevel);
+        int price;
+
+        if (currentLevel == 0) {
+            // First purchase - normal bow
+            price = 5;
+        } else {
+            // Upgrades cost more
+            price = 10 * currentLevel;
+        }
 
         ItemStack item = new ItemStack(Material.BOW);
-        if (currentLevel > 0) {
-            item.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, currentLevel);
+        // Show current enchant if level 2+
+        if (currentLevel >= 2) {
+            item.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, currentLevel - 1);
         }
 
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName("§eUpgrade Bow");
 
         ArrayList<String> lore = new ArrayList<>();
-        if (currentLevel > 0) {
-            lore.add("§7Current: §ePower " + toRoman(currentLevel));
+
+        if (currentLevel == 0) {
+            // No bow yet
+            meta.setDisplayName("§eBuy Bow");
+            lore.add("§7Buy: §eNormal Bow");
+            lore.add("");
+            lore.add("§6Cost: " + price + " Gold");
+        } else if (currentLevel == 1) {
+            // Have normal bow, upgrade to Power I
+            meta.setDisplayName("§eUpgrade Bow");
+            lore.add("§7Current: §eNormal Bow");
+            lore.add("§7Next: §ePower I");
+            lore.add("");
+            lore.add("§6Cost: " + price + " Gold");
         } else {
-            lore.add("§7Buy: §eBow with Power I");
+            // Have Power enchant, upgrade to next level
+            meta.setDisplayName("§eUpgrade Bow");
+            lore.add("§7Current: §ePower " + toRoman(currentLevel - 1));
+            lore.add("§7Next: §ePower " + toRoman(currentLevel));
+            lore.add("");
+            lore.add("§6Cost: " + price + " Gold");
         }
-        lore.add("§7Next: §ePower " + toRoman(nextLevel));
+
         lore.add("");
-        lore.add("§6Cost: " + price + " Gold");
-        lore.add("");
-        lore.add("§eClick to upgrade!");
+        lore.add("§eClick to " + (currentLevel == 0 ? "purchase" : "upgrade") + "!");
 
         meta.setLore(lore);
         item.setItemMeta(meta);
@@ -216,7 +240,8 @@ public class UpgradeShopGUI {
             handleArmorUpgrade(player, game, "boots", 6, Material.LEATHER_BOOTS, Material.CHAINMAIL_BOOTS, Material.IRON_BOOTS, Material.DIAMOND_BOOTS);
         } else if (displayName.contains("Upgrade Sword")) {
             handleSwordUpgrade(player, game);
-        } else if (displayName.contains("Upgrade Bow")) {
+        } else if (displayName.contains("Bow")) {
+            // Handles both "Buy Bow" and "Upgrade Bow"
             handleBowUpgrade(player, game);
         } else if (displayName.contains("Arrows")) {
             handleConsumablePurchase(player, game, new ItemStack(Material.ARROW, 16), 5);
@@ -306,13 +331,22 @@ public class UpgradeShopGUI {
         Map<String, Integer> upgrades = playerUpgradeLevels.get(player);
         int currentLevel = upgrades.getOrDefault("bow", 0);
 
-        if (currentLevel >= 5) {
+        // Max level is now 6 (Power V)
+        if (currentLevel >= 6) {
             player.sendMessage("§cYou already have the maximum level for this item!");
             return;
         }
 
         int nextLevel = currentLevel + 1;
-        int price = 10 * nextLevel;
+        int price;
+
+        if (currentLevel == 0) {
+            // First purchase - normal bow
+            price = 5;
+        } else {
+            // Upgrades
+            price = 10 * currentLevel;
+        }
 
         if (!removeGoldNuggets(player, price)) {
             player.sendMessage(plugin.getConfig().getString("messages.not-enough-gold"));
@@ -321,9 +355,17 @@ public class UpgradeShopGUI {
 
         upgrades.put("bow", nextLevel);
 
-        // Give upgraded bow (unbreakable)
+        // Remove all existing bows from inventory
+        player.getInventory().remove(Material.BOW);
+
+        // Give new bow (unbreakable)
         ItemStack bow = new ItemStack(Material.BOW);
-        bow.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, nextLevel);
+
+        // Add enchantment if level 2+ (Power I-V)
+        if (nextLevel >= 2) {
+            bow.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, nextLevel - 1);
+        }
+
         ItemMeta bowMeta = bow.getItemMeta();
         if (bowMeta != null) {
             bowMeta.setUnbreakable(true);
@@ -331,7 +373,8 @@ public class UpgradeShopGUI {
         }
         player.getInventory().addItem(bow);
 
-        player.sendMessage(plugin.getConfig().getString("messages.purchased").replace("{item}", "Bow Upgrade"));
+        String itemName = (nextLevel == 1) ? "Bow" : "Bow Power " + toRoman(nextLevel - 1);
+        player.sendMessage(plugin.getConfig().getString("messages.purchased").replace("{item}", itemName));
         openShop(player, game);
     }
 
