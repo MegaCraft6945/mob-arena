@@ -9,6 +9,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
@@ -130,7 +131,15 @@ public class GameManager {
             Player player = Bukkit.getPlayer(playerId);
             if (player != null) {
                 giveKit(player, game.getPlayerKit(playerId));
-                player.getInventory().setItem(8, new ItemStack(Material.EMERALD));
+
+                // Give emerald for upgrade shop access
+                ItemStack emerald = new ItemStack(Material.EMERALD);
+                ItemMeta meta = emerald.getItemMeta();
+                meta.setDisplayName("§aUpgrade Shop");
+                meta.setLore(Arrays.asList("§7Right-click to open the", "§7upgrade shop after each round!"));
+                emerald.setItemMeta(meta);
+                player.getInventory().setItem(8, emerald);
+
                 player.sendMessage("§a§lGAME STARTED!");
                 player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1f, 1f);
             }
@@ -327,6 +336,14 @@ public class GameManager {
                 }
             }
         }.runTaskLater(plugin, 30 * 20L);
+    }
+
+    public void openUpgradeShop(Player player, Game game) {
+        if (game.getState() == GameState.UPGRADE_SHOP) {
+            upgradeShopGUI.openShop(player, game);
+        } else {
+            player.sendMessage("§cThe upgrade shop is not currently open!");
+        }
     }
 
     private void winGame(Game game) {

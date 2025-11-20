@@ -2,6 +2,7 @@ package com.legion.mobarena.listeners;
 
 import com.legion.mobarena.LegionMobArena;
 import com.legion.mobarena.models.Game;
+import com.legion.mobarena.models.GameState;
 import com.legion.mobarena.models.Kit;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
@@ -29,7 +30,7 @@ public class PlayerInteractListener implements Listener {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
 
-        if (item == null || !item.hasItemMeta()) return;
+        if (item == null) return;
 
         Game game = plugin.getGameManager().getPlayerGame(player.getUniqueId());
         if (game == null) return;
@@ -37,6 +38,15 @@ public class PlayerInteractListener implements Listener {
         if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
+
+        // Check if player clicked emerald to open upgrade shop
+        if (item.getType() == Material.EMERALD && game.getState() == GameState.UPGRADE_SHOP) {
+            event.setCancelled(true);
+            plugin.getGameManager().openUpgradeShop(player, game);
+            return;
+        }
+
+        if (!item.hasItemMeta()) return;
 
         Kit kit = game.getPlayerKit(player.getUniqueId());
         if (kit == null) return;
