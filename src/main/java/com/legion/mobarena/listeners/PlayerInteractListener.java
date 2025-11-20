@@ -130,7 +130,7 @@ public class PlayerInteractListener implements Listener {
             }
         }
 
-        player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION_LARGE, 1);
+        player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, player.getLocation(), 3);
         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1f, 0.8f);
         player.sendMessage("§6§lGround Slam activated!");
 
