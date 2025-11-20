@@ -1,0 +1,240 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    color: white;
+    margin-bottom: 40px;
+    padding: 30px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+
+header h1 {
+    font-size: 3em;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+header h2 {
+    font-size: 1.5em;
+    font-weight: 300;
+    opacity: 0.9;
+}
+
+.stats-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-value {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #667eea;
+    margin-bottom: 10px;
+}
+
+.stat-label {
+    font-size: 1em;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.leaderboard-container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.leaderboard-header {
+    display: grid;
+    grid-template-columns: 80px 1fr 120px 100px 100px 100px;
+    gap: 15px;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9em;
+}
+
+.leaderboard-body {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.leaderboard-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 120px 100px 100px 100px;
+    gap: 15px;
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+    transition: background 0.2s;
+    align-items: center;
+}
+
+.leaderboard-row:hover {
+    background: #f5f5f5;
+}
+
+.leaderboard-row:nth-child(1) {
+    background: linear-gradient(90deg, #ffd700 0%, #ffed4e 100%);
+    font-weight: bold;
+}
+
+.leaderboard-row:nth-child(2) {
+    background: linear-gradient(90deg, #c0c0c0 0%, #e8e8e8 100%);
+    font-weight: bold;
+}
+
+.leaderboard-row:nth-child(3) {
+    background: linear-gradient(90deg, #cd7f32 0%, #e8b88a 100%);
+    font-weight: bold;
+}
+
+.rank {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #667eea;
+    text-align: center;
+}
+
+.leaderboard-row:nth-child(1) .rank {
+    color: #b8860b;
+    font-size: 2em;
+}
+
+.leaderboard-row:nth-child(2) .rank {
+    color: #708090;
+    font-size: 1.8em;
+}
+
+.leaderboard-row:nth-child(3) .rank {
+    color: #8b4513;
+    font-size: 1.6em;
+}
+
+.player-name {
+    font-weight: 600;
+    font-size: 1.1em;
+}
+
+.round-col, .games-col, .kills-col, .gems-col {
+    text-align: center;
+    font-weight: 500;
+}
+
+.round-value {
+    color: #667eea;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.loading {
+    padding: 40px;
+    text-align: center;
+    color: #666;
+    font-size: 1.1em;
+}
+
+.error {
+    padding: 40px;
+    text-align: center;
+    color: #d32f2f;
+    font-size: 1.1em;
+}
+
+footer {
+    text-align: center;
+    color: white;
+    margin-top: 40px;
+    padding: 20px;
+    opacity: 0.9;
+}
+
+footer p {
+    margin: 5px 0;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2em;
+    }
+
+    header h2 {
+        font-size: 1.2em;
+    }
+
+    .leaderboard-header,
+    .leaderboard-row {
+        grid-template-columns: 50px 1fr 80px 70px;
+        gap: 10px;
+        padding: 15px 10px;
+        font-size: 0.85em;
+    }
+
+    .kills-col, .gems-col {
+        display: none;
+    }
+
+    .stat-value {
+        font-size: 2em;
+    }
+
+    .stat-card {
+        padding: 20px;
+    }
+}
+
+/* Scrollbar styling */
+.leaderboard-body::-webkit-scrollbar {
+    width: 10px;
+}
+
+.leaderboard-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.leaderboard-body::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 5px;
+}
+
+.leaderboard-body::-webkit-scrollbar-thumb:hover {
+    background: #764ba2;
+}
