@@ -42,14 +42,40 @@ public class InventoryClickListener implements Listener {
             }
             return;
         }
-        // Upgrade Shop GUI - Match new format "✦ Upgrade Shop ✦"
-        else if (title.contains("Upgrade Shop")) {
+        // Upgrade Shop GUI - Main menu and submenus
+        else if (title.contains("Upgrade Shop") || title.contains("Armor Shop") ||
+                 title.contains("Weapons Shop") || title.contains("Consumables Shop")) {
             event.setCancelled(true);
-            if (clicked != null && clicked.hasItemMeta()) {
-                Game game = plugin.getGameManager().getPlayerGame(player.getUniqueId());
-                if (game != null) {
-                    upgradeShopGUI.handleClick(player, clicked, game);
+
+            if (clicked == null || !clicked.hasItemMeta()) {
+                return;
+            }
+
+            Game game = plugin.getGameManager().getPlayerGame(player.getUniqueId());
+            if (game == null) {
+                return;
+            }
+
+            String displayName = clicked.getItemMeta().getDisplayName();
+
+            // Handle category buttons in main shop
+            if (title.contains("Upgrade Shop") && !title.contains("Armor") &&
+                !title.contains("Weapons") && !title.contains("Consumables")) {
+                if (displayName.contains("Armor Upgrades")) {
+                    upgradeShopGUI.openArmorShop(player, game);
+                } else if (displayName.contains("Weapon Upgrades")) {
+                    upgradeShopGUI.openWeaponsShop(player, game);
+                } else if (displayName.contains("Consumables")) {
+                    upgradeShopGUI.openConsumablesShop(player, game);
                 }
+            }
+            // Handle back button in submenus
+            else if (displayName.contains("← Back to Shop")) {
+                upgradeShopGUI.openShop(player, game);
+            }
+            // Handle item purchases/upgrades in submenus
+            else {
+                upgradeShopGUI.handleClick(player, clicked, game);
             }
             return;
         }

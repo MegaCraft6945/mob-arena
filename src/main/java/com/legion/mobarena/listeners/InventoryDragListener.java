@@ -19,7 +19,7 @@ public class InventoryDragListener implements Listener {
 
         // Prevent dragging in all plugin GUIs
         if (title.contains("Select Your Kit") ||
-            title.contains("Shop -") ||
+            title.contains("Shop") ||
             title.contains("Select Arena") ||
             title.contains("Admin Menu") ||
             title.contains("Manage Arenas")) {

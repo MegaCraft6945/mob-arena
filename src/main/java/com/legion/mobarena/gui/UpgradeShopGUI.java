@@ -37,18 +37,91 @@ public class UpgradeShopGUI {
             goldDisplay = String.valueOf(goldNuggets);
         }
 
-        Inventory inv = Bukkit.createInventory(null, 54, "§8§l✦ §6§lUpgrade Shop §8§l✦ §e" + goldDisplay + "G");
+        Inventory inv = Bukkit.createInventory(null, 27, "§8§l✦ §6§lUpgrade Shop §8§l✦ §e" + goldDisplay + "G");
 
         // Initialize player upgrade levels if not exists
         if (!playerUpgradeLevels.containsKey(player)) {
             playerUpgradeLevels.put(player, new HashMap<>());
         }
 
+        // === CATEGORY BUTTONS ===
+
+        // Armor Category
+        ItemStack armorButton = new ItemStack(Material.DIAMOND_CHESTPLATE);
+        ItemMeta armorMeta = armorButton.getItemMeta();
+        armorMeta.setDisplayName("§6§l✦ Armor Upgrades");
+        armorMeta.setLore(Arrays.asList(
+                "",
+                "§7Upgrade your armor pieces",
+                "",
+                "§e§lAvailable:",
+                "§7• Helmet",
+                "§7• Chestplate",
+                "§7• Leggings",
+                "§7• Boots",
+                "",
+                "§e§l» Click to browse!"
+        ));
+        armorButton.setItemMeta(armorMeta);
+        inv.setItem(11, armorButton);
+
+        // Weapons Category
+        ItemStack weaponsButton = new ItemStack(Material.DIAMOND_SWORD);
+        ItemMeta weaponsMeta = weaponsButton.getItemMeta();
+        weaponsMeta.setDisplayName("§c§l✦ Weapon Upgrades");
+        weaponsMeta.setLore(Arrays.asList(
+                "",
+                "§7Upgrade your weapons",
+                "",
+                "§e§lAvailable:",
+                "§7• Sword",
+                "§7• Bow",
+                "",
+                "§e§l» Click to browse!"
+        ));
+        weaponsButton.setItemMeta(weaponsMeta);
+        inv.setItem(13, weaponsButton);
+
+        // Consumables Category
+        ItemStack consumablesButton = new ItemStack(Material.GOLDEN_APPLE);
+        ItemMeta consumablesMeta = consumablesButton.getItemMeta();
+        consumablesMeta.setDisplayName("§a§l✦ Consumables");
+        consumablesMeta.setLore(Arrays.asList(
+                "",
+                "§7Purchase consumable items",
+                "",
+                "§e§lAvailable:",
+                "§7• Arrows (16x)",
+                "§7• Golden Apple",
+                "§7• Cake",
+                "",
+                "§e§l» Click to browse!"
+        ));
+        consumablesButton.setItemMeta(consumablesMeta);
+        inv.setItem(15, consumablesButton);
+
+        player.openInventory(inv);
+    }
+
+    public void openArmorShop(Player player, Game game) {
+        int goldNuggets = countGoldNuggets(player);
+        String goldDisplay = goldNuggets >= 1000 ? String.format("%.1fK", goldNuggets / 1000.0) : String.valueOf(goldNuggets);
+
+        Inventory inv = Bukkit.createInventory(null, 45, "§8§l✦ §6§lArmor Shop §8§l✦ §e" + goldDisplay + "G");
+
         Map<String, Integer> upgrades = playerUpgradeLevels.get(player);
 
-        // === ARMOR SECTION (Row 2) ===
-        // Header
-        inv.setItem(10, createSectionHeader("§6§lArmor Upgrades"));
+        // Add decorative border
+        ItemStack border = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        ItemMeta borderMeta = border.getItemMeta();
+        borderMeta.setDisplayName(" ");
+        border.setItemMeta(borderMeta);
+
+        for (int i = 0; i < 45; i++) {
+            if (i < 9 || i >= 36 || i % 9 == 0 || i % 9 == 8) {
+                inv.setItem(i, border);
+            }
+        }
 
         // Helmet - Slot 20
         inv.setItem(20, createUpgradeItem(
@@ -82,55 +155,93 @@ public class UpgradeShopGUI {
                 6
         ));
 
-        // === WEAPONS SECTION (Row 3) ===
-        // Header
-        inv.setItem(28, createSectionHeader("§c§lWeapon Upgrades"));
+        // Back button
+        ItemStack back = new ItemStack(Material.ARROW);
+        ItemMeta backMeta = back.getItemMeta();
+        backMeta.setDisplayName("§c§l← Back to Shop");
+        backMeta.setLore(Arrays.asList("§7Return to main shop"));
+        back.setItemMeta(backMeta);
+        inv.setItem(40, back);
 
-        // Sword - Slot 38
-        inv.setItem(38, createUpgradeItem(
+        player.openInventory(inv);
+    }
+
+    public void openWeaponsShop(Player player, Game game) {
+        int goldNuggets = countGoldNuggets(player);
+        String goldDisplay = goldNuggets >= 1000 ? String.format("%.1fK", goldNuggets / 1000.0) : String.valueOf(goldNuggets);
+
+        Inventory inv = Bukkit.createInventory(null, 45, "§8§l✦ §c§lWeapons Shop §8§l✦ §e" + goldDisplay + "G");
+
+        Map<String, Integer> upgrades = playerUpgradeLevels.get(player);
+
+        // Add decorative border
+        ItemStack border = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        ItemMeta borderMeta = border.getItemMeta();
+        borderMeta.setDisplayName(" ");
+        border.setItemMeta(borderMeta);
+
+        for (int i = 0; i < 45; i++) {
+            if (i < 9 || i >= 36 || i % 9 == 0 || i % 9 == 8) {
+                inv.setItem(i, border);
+            }
+        }
+
+        // Sword - Slot 21
+        inv.setItem(21, createUpgradeItem(
                 "sword",
                 new Material[]{Material.STONE_SWORD, Material.IRON_SWORD, Material.DIAMOND_SWORD},
                 upgrades.getOrDefault("sword", 0),
                 15
         ));
 
-        // Bow - Slot 39
-        inv.setItem(39, createBowUpgradeItem(upgrades.getOrDefault("bow", 0)));
+        // Bow - Slot 23
+        inv.setItem(23, createBowUpgradeItem(upgrades.getOrDefault("bow", 0)));
 
-        // === CONSUMABLES SECTION (Row 4) ===
-        // Header
-        inv.setItem(46, createSectionHeader("§a§lConsumables"));
+        // Back button
+        ItemStack back = new ItemStack(Material.ARROW);
+        ItemMeta backMeta = back.getItemMeta();
+        backMeta.setDisplayName("§c§l← Back to Shop");
+        backMeta.setLore(Arrays.asList("§7Return to main shop"));
+        back.setItemMeta(backMeta);
+        inv.setItem(40, back);
 
-        // Arrows - Slot 47
-        inv.setItem(47, createConsumableItem(Material.ARROW, 16, 5, "Arrows"));
+        player.openInventory(inv);
+    }
 
-        // Golden Apple - Slot 48
-        inv.setItem(48, createConsumableItem(Material.GOLDEN_APPLE, 1, 10, "Golden Apple"));
+    public void openConsumablesShop(Player player, Game game) {
+        int goldNuggets = countGoldNuggets(player);
+        String goldDisplay = goldNuggets >= 1000 ? String.format("%.1fK", goldNuggets / 1000.0) : String.valueOf(goldNuggets);
 
-        // Cake - Slot 49
-        inv.setItem(49, createConsumableItem(Material.CAKE, 1, 40, "Cake"));
+        Inventory inv = Bukkit.createInventory(null, 45, "§8§l✦ §a§lConsumables Shop §8§l✦ §e" + goldDisplay + "G");
 
-        // === DECORATIVE BORDER ===
+        // Add decorative border
         ItemStack border = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta borderMeta = border.getItemMeta();
         borderMeta.setDisplayName(" ");
         border.setItemMeta(borderMeta);
 
-        // Top and bottom rows
-        for (int i = 0; i < 9; i++) {
-            inv.setItem(i, border);
-            inv.setItem(i + 45, border);
+        for (int i = 0; i < 45; i++) {
+            if (i < 9 || i >= 36 || i % 9 == 0 || i % 9 == 8) {
+                inv.setItem(i, border);
+            }
         }
 
-        // Side columns
-        inv.setItem(9, border);
-        inv.setItem(17, border);
-        inv.setItem(18, border);
-        inv.setItem(26, border);
-        inv.setItem(27, border);
-        inv.setItem(35, border);
-        inv.setItem(36, border);
-        inv.setItem(44, border);
+        // Arrows - Slot 20
+        inv.setItem(20, createConsumableItem(Material.ARROW, 16, 5, "Arrows"));
+
+        // Golden Apple - Slot 22
+        inv.setItem(22, createConsumableItem(Material.GOLDEN_APPLE, 1, 10, "Golden Apple"));
+
+        // Cake - Slot 24
+        inv.setItem(24, createConsumableItem(Material.CAKE, 1, 40, "Cake"));
+
+        // Back button
+        ItemStack back = new ItemStack(Material.ARROW);
+        ItemMeta backMeta = back.getItemMeta();
+        backMeta.setDisplayName("§c§l← Back to Shop");
+        backMeta.setLore(Arrays.asList("§7Return to main shop"));
+        back.setItemMeta(backMeta);
+        inv.setItem(40, back);
 
         player.openInventory(inv);
     }
