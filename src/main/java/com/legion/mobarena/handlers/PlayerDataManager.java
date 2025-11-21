@@ -9,7 +9,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -256,6 +258,58 @@ public class PlayerDataManager {
 
     public Map<UUID, PlayerData> getAllPlayerData() {
         return new HashMap<>(playerDataCache);
+    }
+
+    public List<PlayerData> getAllPlayerDataFromDatabase() {
+        List<PlayerData> allPlayers = new ArrayList<>();
+
+        try {
+            Connection conn = plugin.getDatabaseManager().getConnection();
+            if (conn == null) {
+                // Database disabled - return cached data only
+                return new ArrayList<>(playerDataCache.values());
+            }
+
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT * FROM player_data ORDER BY highest_round DESC, total_kills DESC"
+            );
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                UUID uuid = UUID.fromString(rs.getString("uuid"));
+                PlayerData data = new PlayerData(uuid, rs.getString("name"));
+                data.setGems(rs.getInt("gems"));
+                data.setTotalKills(rs.getInt("total_kills"));
+                data.setTotalDeaths(rs.getInt("total_deaths"));
+                data.setHighestRound(rs.getInt("highest_round"));
+                data.setGamesPlayed(rs.getInt("games_played"));
+                data.setGamesWon(rs.getInt("games_won"));
+                data.setLastSeen(rs.getLong("last_seen"));
+
+                // Load kits for this player
+                PreparedStatement kitPs = conn.prepareStatement(
+                        "SELECT kit_name FROM player_kits WHERE uuid = ?"
+                );
+                kitPs.setString(1, uuid.toString());
+                ResultSet kitRs = kitPs.executeQuery();
+                while (kitRs.next()) {
+                    data.unlockKit(kitRs.getString("kit_name"));
+                }
+                kitRs.close();
+                kitPs.close();
+
+                allPlayers.add(data);
+            }
+
+            rs.close();
+            ps.close();
+
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Error loading all player data from database");
+            e.printStackTrace();
+        }
+
+        return allPlayers;
     }
 
     public void resetAllStats() {

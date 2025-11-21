@@ -100,65 +100,72 @@ public class StatsAPIServer {
      * GET /api/stats - Server summary statistics
      */
     private void getStats(Context ctx) {
-        Map<String, Object> stats = new HashMap<>();
-        Map<UUID, PlayerData> allData = plugin.getPlayerDataManager().getAllPlayerData();
+        // Fetch from database asynchronously
+        ctx.future(() -> {
+            List<PlayerData> allData = plugin.getPlayerDataManager().getAllPlayerDataFromDatabase();
 
-        // Basic stats
-        stats.put("totalPlayers", allData.size());
-        stats.put("totalGames", allData.values().stream().mapToInt(PlayerData::getGamesPlayed).sum());
-        stats.put("totalGamesWon", allData.values().stream().mapToInt(PlayerData::getGamesWon).sum());
-        stats.put("totalKills", allData.values().stream().mapToInt(PlayerData::getTotalKills).sum());
-        stats.put("totalDeaths", allData.values().stream().mapToInt(PlayerData::getTotalDeaths).sum());
-        stats.put("totalGems", allData.values().stream().mapToInt(PlayerData::getGems).sum());
-        stats.put("highestRound", allData.values().stream().mapToInt(PlayerData::getHighestRound).max().orElse(0));
+            Map<String, Object> stats = new HashMap<>();
 
-        // Server info
-        stats.put("serverName", plugin.getConfig().getString("api.server-name", "Legion Mob Arena"));
-        stats.put("timestamp", System.currentTimeMillis());
+            // Basic stats
+            stats.put("totalPlayers", allData.size());
+            stats.put("totalGames", allData.stream().mapToInt(PlayerData::getGamesPlayed).sum());
+            stats.put("totalGamesWon", allData.stream().mapToInt(PlayerData::getGamesWon).sum());
+            stats.put("totalKills", allData.stream().mapToInt(PlayerData::getTotalKills).sum());
+            stats.put("totalDeaths", allData.stream().mapToInt(PlayerData::getTotalDeaths).sum());
+            stats.put("totalGems", allData.stream().mapToInt(PlayerData::getGems).sum());
+            stats.put("highestRound", allData.stream().mapToInt(PlayerData::getHighestRound).max().orElse(0));
 
-        ctx.json(stats);
+            // Server info
+            stats.put("serverName", plugin.getConfig().getString("api.server-name", "Legion Mob Arena"));
+            stats.put("timestamp", System.currentTimeMillis());
+
+            return stats;
+        });
     }
 
     /**
      * GET /api/leaderboard - Full leaderboard with all players
      */
     private void getLeaderboard(Context ctx) {
-        List<Map<String, Object>> leaderboard = new ArrayList<>();
-        Map<UUID, PlayerData> allData = plugin.getPlayerDataManager().getAllPlayerData();
+        // Fetch from database asynchronously
+        ctx.future(() -> {
+            List<PlayerData> allData = plugin.getPlayerDataManager().getAllPlayerDataFromDatabase();
+            List<Map<String, Object>> leaderboard = new ArrayList<>();
 
-        for (PlayerData data : allData.values()) {
-            Map<String, Object> entry = new HashMap<>();
-            entry.put("playerName", data.getName());
-            entry.put("playerId", data.getUuid().toString());
-            entry.put("highestRound", data.getHighestRound());
-            entry.put("totalGamesPlayed", data.getGamesPlayed());
-            entry.put("gamesWon", data.getGamesWon());
-            entry.put("totalKills", data.getTotalKills());
-            entry.put("totalDeaths", data.getTotalDeaths());
-            entry.put("totalGemsEarned", data.getGems());
-            entry.put("unlockedKits", data.getUnlockedKits().size());
-            entry.put("lastPlayed", data.getLastSeen());
+            for (PlayerData data : allData) {
+                Map<String, Object> entry = new HashMap<>();
+                entry.put("playerName", data.getName());
+                entry.put("playerId", data.getUuid().toString());
+                entry.put("highestRound", data.getHighestRound());
+                entry.put("totalGamesPlayed", data.getGamesPlayed());
+                entry.put("gamesWon", data.getGamesWon());
+                entry.put("totalKills", data.getTotalKills());
+                entry.put("totalDeaths", data.getTotalDeaths());
+                entry.put("totalGemsEarned", data.getGems());
+                entry.put("unlockedKits", data.getUnlockedKits().size());
+                entry.put("lastPlayed", data.getLastSeen());
 
-            // Calculated stats
-            double kdr = data.getTotalDeaths() > 0 ?
-                    (double) data.getTotalKills() / data.getTotalDeaths() : data.getTotalKills();
-            double winRate = data.getGamesPlayed() > 0 ?
-                    (double) data.getGamesWon() / data.getGamesPlayed() * 100 : 0;
+                // Calculated stats
+                double kdr = data.getTotalDeaths() > 0 ?
+                        (double) data.getTotalKills() / data.getTotalDeaths() : data.getTotalKills();
+                double winRate = data.getGamesPlayed() > 0 ?
+                        (double) data.getGamesWon() / data.getGamesPlayed() * 100 : 0;
 
-            entry.put("kdr", Math.round(kdr * 100.0) / 100.0);
-            entry.put("winRate", Math.round(winRate * 10.0) / 10.0);
+                entry.put("kdr", Math.round(kdr * 100.0) / 100.0);
+                entry.put("winRate", Math.round(winRate * 10.0) / 10.0);
 
-            leaderboard.add(entry);
-        }
+                leaderboard.add(entry);
+            }
 
-        // Sort by highest round, then kills
-        leaderboard.sort((a, b) -> {
-            int roundCompare = Integer.compare((int) b.get("highestRound"), (int) a.get("highestRound"));
-            if (roundCompare != 0) return roundCompare;
-            return Integer.compare((int) b.get("totalKills"), (int) a.get("totalKills"));
+            // Sort by highest round, then kills
+            leaderboard.sort((a, b) -> {
+                int roundCompare = Integer.compare((int) b.get("highestRound"), (int) a.get("highestRound"));
+                if (roundCompare != 0) return roundCompare;
+                return Integer.compare((int) b.get("totalKills"), (int) a.get("totalKills"));
+            });
+
+            return leaderboard;
         });
-
-        ctx.json(leaderboard);
     }
 
     /**
@@ -167,35 +174,49 @@ public class StatsAPIServer {
     private void getPlayerStats(Context ctx) {
         String uuidStr = ctx.pathParam("uuid");
 
-        try {
-            UUID uuid = UUID.fromString(uuidStr);
-            PlayerData data = plugin.getPlayerDataManager().getPlayerData(uuid);
+        ctx.future(() -> {
+            try {
+                UUID uuid = UUID.fromString(uuidStr);
 
-            if (data == null) {
-                ctx.status(404).json(Map.of("error", "Player not found"));
-                return;
+                // First check cache for online player
+                PlayerData data = plugin.getPlayerDataManager().getPlayerData(uuid);
+
+                // If not in cache, load from database
+                if (data == null) {
+                    List<PlayerData> allPlayers = plugin.getPlayerDataManager().getAllPlayerDataFromDatabase();
+                    data = allPlayers.stream()
+                            .filter(p -> p.getUuid().equals(uuid))
+                            .findFirst()
+                            .orElse(null);
+                }
+
+                if (data == null) {
+                    ctx.status(404).json(Map.of("error", "Player not found"));
+                    return null;
+                }
+
+                Map<String, Object> playerStats = new HashMap<>();
+                playerStats.put("playerName", data.getName());
+                playerStats.put("playerId", data.getUuid().toString());
+                playerStats.put("gems", data.getGems());
+                playerStats.put("highestRound", data.getHighestRound());
+                playerStats.put("gamesPlayed", data.getGamesPlayed());
+                playerStats.put("gamesWon", data.getGamesWon());
+                playerStats.put("totalKills", data.getTotalKills());
+                playerStats.put("totalDeaths", data.getTotalDeaths());
+                playerStats.put("kdr", data.getTotalDeaths() > 0 ?
+                        (double) data.getTotalKills() / data.getTotalDeaths() : data.getTotalKills());
+                playerStats.put("winRate", data.getGamesPlayed() > 0 ?
+                        (double) data.getGamesWon() / data.getGamesPlayed() * 100 : 0);
+                playerStats.put("unlockedKits", data.getUnlockedKits().size());
+                playerStats.put("lastSeen", data.getLastSeen());
+
+                return playerStats;
+
+            } catch (IllegalArgumentException e) {
+                ctx.status(400).json(Map.of("error", "Invalid UUID format"));
+                return null;
             }
-
-            Map<String, Object> playerStats = new HashMap<>();
-            playerStats.put("playerName", data.getName());
-            playerStats.put("playerId", data.getUuid().toString());
-            playerStats.put("gems", data.getGems());
-            playerStats.put("highestRound", data.getHighestRound());
-            playerStats.put("gamesPlayed", data.getGamesPlayed());
-            playerStats.put("gamesWon", data.getGamesWon());
-            playerStats.put("totalKills", data.getTotalKills());
-            playerStats.put("totalDeaths", data.getTotalDeaths());
-            playerStats.put("kdr", data.getTotalDeaths() > 0 ?
-                    (double) data.getTotalKills() / data.getTotalDeaths() : data.getTotalKills());
-            playerStats.put("winRate", data.getGamesPlayed() > 0 ?
-                    (double) data.getGamesWon() / data.getGamesPlayed() * 100 : 0);
-            playerStats.put("unlockedKits", data.getUnlockedKits().size());
-            playerStats.put("lastSeen", data.getLastSeen());
-
-            ctx.json(playerStats);
-
-        } catch (IllegalArgumentException e) {
-            ctx.status(400).json(Map.of("error", "Invalid UUID format"));
-        }
+        });
     }
 }
