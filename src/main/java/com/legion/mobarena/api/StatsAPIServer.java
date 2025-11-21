@@ -105,22 +105,120 @@ public class StatsAPIServer {
     }
 
     /**
-     * GET / - Serve the stats web interface
+     * GET / - Show API information and website setup instructions
      */
     private void serveStatsPage(Context ctx) {
-        try {
-            InputStream inputStream = plugin.getResource("stats.html");
-            if (inputStream == null) {
-                ctx.status(404).result("Stats page not found");
-                return;
-            }
+        String serverName = plugin.getConfig().getString("api.server-name", "Legion Mob Arena");
+        String html = """
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>%s - API Server</title>
+                    <style>
+                        body {
+                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                            background: linear-gradient(135deg, #667eea 0%%, #764ba2 100%%);
+                            min-height: 100vh;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            padding: 20px;
+                            margin: 0;
+                        }
+                        .container {
+                            background: white;
+                            border-radius: 15px;
+                            padding: 40px;
+                            max-width: 800px;
+                            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                        }
+                        h1 { color: #667eea; margin-bottom: 10px; }
+                        h2 { color: #764ba2; margin-top: 30px; margin-bottom: 15px; font-size: 1.3em; }
+                        .status {
+                            background: #d4edda;
+                            color: #155724;
+                            padding: 15px;
+                            border-radius: 8px;
+                            margin: 20px 0;
+                            border: 1px solid #c3e6cb;
+                        }
+                        .info {
+                            background: #d1ecf1;
+                            color: #0c5460;
+                            padding: 15px;
+                            border-radius: 8px;
+                            margin: 20px 0;
+                            border: 1px solid #bee5eb;
+                        }
+                        .endpoint {
+                            background: #f8f9fa;
+                            padding: 10px 15px;
+                            border-left: 4px solid #667eea;
+                            margin: 10px 0;
+                            font-family: monospace;
+                        }
+                        .endpoint a {
+                            color: #667eea;
+                            text-decoration: none;
+                        }
+                        .endpoint a:hover {
+                            text-decoration: underline;
+                        }
+                        code {
+                            background: #f4f4f4;
+                            padding: 2px 6px;
+                            border-radius: 3px;
+                            font-family: monospace;
+                        }
+                        ul {
+                            line-height: 1.8;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <h1>⚔️ %s</h1>
+                        <div class="status">
+                            <strong>✅ API Server is Running</strong>
+                        </div>
 
-            String html = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-            ctx.contentType("text/html").result(html);
+                        <h2>📊 Available API Endpoints</h2>
+                        <div class="endpoint">
+                            <a href="/api/stats">/api/stats</a> - Server summary statistics
+                        </div>
+                        <div class="endpoint">
+                            <a href="/api/leaderboard">/api/leaderboard</a> - Full player leaderboard
+                        </div>
+                        <div class="endpoint">
+                            /api/player/{uuid} - Individual player stats
+                        </div>
 
-        } catch (Exception e) {
-            ctx.status(500).result("Error loading stats page: " + e.getMessage());
-        }
+                        <h2>🌐 Website Setup</h2>
+                        <div class="info">
+                            <p><strong>Want a beautiful stats website?</strong></p>
+                            <p>The standalone website files are available in the plugin's GitHub repository:</p>
+                            <ol>
+                                <li>Download the <code>website/</code> folder from GitHub</li>
+                                <li>Edit <code>config.js</code> with your server's IP address</li>
+                                <li>Upload to any web hosting (InfinityFree, GitHub Pages, etc.)</li>
+                            </ol>
+                            <p>See <code>website/README.md</code> for full instructions.</p>
+                        </div>
+
+                        <h2>🔧 API Information</h2>
+                        <ul>
+                            <li><strong>CORS:</strong> Enabled (allows remote websites to access this API)</li>
+                            <li><strong>Format:</strong> JSON</li>
+                            <li><strong>Authentication:</strong> None (read-only public API)</li>
+                        </ul>
+                    </div>
+                </body>
+                </html>
+                """.formatted(serverName, serverName);
+
+        ctx.contentType("text/html").result(html);
     }
 
     /**
