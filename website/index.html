@@ -169,6 +169,24 @@
             color: #666;
         }
 
+        .error {
+            text-align: center;
+            padding: 40px;
+            color: #d32f2f;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .error h3 {
+            margin-bottom: 15px;
+        }
+
+        .error p {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
         footer {
             text-align: center;
             color: white;
@@ -313,22 +331,42 @@
         </footer>
     </div>
 
+    <!-- Load configuration first -->
+    <script src="config.js"></script>
+
     <script>
         let autoRefreshInterval = null;
 
+        // Check if config is properly set
+        if (!CONFIG || CONFIG.API_BASE_URL === 'http://YOUR-SERVER-IP:25566') {
+            document.getElementById('content').innerHTML = `
+                <div class="error">
+                    <h3>⚠️ Configuration Required</h3>
+                    <p><strong>Please update config.js with your server's IP address!</strong></p>
+                    <p>1. Open <code>config.js</code> in a text editor</p>
+                    <p>2. Replace <code>YOUR-SERVER-IP</code> with your actual server IP</p>
+                    <p>3. Example: <code>API_BASE_URL: 'http://123.45.67.89:25566'</code></p>
+                    <p>4. Make sure the API is enabled in your server's config.yml</p>
+                </div>
+            `;
+        }
+
         async function fetchAPI(endpoint) {
-            const response = await fetch(endpoint);
-            if (!response.ok) throw new Error('Failed to fetch');
+            const url = CONFIG.API_BASE_URL + endpoint;
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Failed to fetch from ' + url);
             return await response.json();
         }
 
         function startAutoRefresh(viewFunction) {
             if (autoRefreshInterval) clearInterval(autoRefreshInterval);
-            autoRefreshInterval = setInterval(viewFunction, 30000);
+            autoRefreshInterval = setInterval(viewFunction, CONFIG.REFRESH_INTERVAL || 30000);
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            loadAllPlayers();
+            if (CONFIG && CONFIG.API_BASE_URL !== 'http://YOUR-SERVER-IP:25566') {
+                loadAllPlayers();
+            }
         });
 
         async function loadAllPlayers() {
@@ -429,8 +467,18 @@
                 document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
 
             } catch (error) {
-                document.getElementById('content').innerHTML =
-                    '<div class="loading" style="color: #d32f2f;">Failed to load stats. Server may be offline.</div>';
+                document.getElementById('content').innerHTML = `
+                    <div class="error">
+                        <h3>❌ Failed to load stats</h3>
+                        <p><strong>Cannot connect to the server API</strong></p>
+                        <p>Please check:</p>
+                        <p>1. Your server is online and running</p>
+                        <p>2. API is enabled in config.yml</p>
+                        <p>3. Port ${CONFIG.API_BASE_URL} is accessible</p>
+                        <p>4. Firewall/port forwarding is configured</p>
+                        <p style="margin-top: 15px; font-size: 0.9em;">Error: ${error.message}</p>
+                    </div>
+                `;
             }
         }
 
@@ -505,8 +553,12 @@
                 document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
 
             } catch (error) {
-                document.getElementById('content').innerHTML =
-                    '<div class="loading" style="color: #d32f2f;">Failed to load leaderboard.</div>';
+                document.getElementById('content').innerHTML = `
+                    <div class="error">
+                        <h3>❌ Failed to load leaderboard</h3>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
             }
         }
     </script>
