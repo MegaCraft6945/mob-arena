@@ -25,7 +25,7 @@ public class StatsAPIServer {
     public StatsAPIServer(LegionMobArena plugin) {
         this.plugin = plugin;
         this.gson = new GsonBuilder().setPrettyPrinting().create();
-        this.port = plugin.getConfig().getInt("api.port", 8080);
+        this.port = plugin.getConfig().getInt("api.port", 25566);
     }
 
     /**

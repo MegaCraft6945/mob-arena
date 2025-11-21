@@ -168,7 +168,7 @@ See **[LIVE_STATS_API_SETUP.md](LIVE_STATS_API_SETUP.md)** for complete setup in
 
 **Quick Start:**
 1. Enable API in `config.yml`
-2. Open port 8080
+2. Open port 25566 (or configure a different port)
 3. Use the included `leaderboard.html` file
 4. Your live leaderboard is ready!
 

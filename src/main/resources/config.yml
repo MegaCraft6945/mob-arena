@@ -73,7 +73,7 @@ spawn:
 # Enables a REST API server for displaying live leaderboard on a website
 api:
   enabled: false  # Set to true to enable the Stats API
-  port: 8080  # Port for the HTTP server
+  port: 25566  # Port for the HTTP server (use a different port if this conflicts)
   server-name: "My Legion Mob Arena Server"  # Display name for your server
 
 # Note: Messages have been moved to messages.yml

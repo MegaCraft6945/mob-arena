@@ -21,36 +21,37 @@ This plugin includes a built-in REST API server that allows you to display live 
    ```yaml
    api:
      enabled: false  # Change this to true
-     port: 8080  # Port for the HTTP server
+     port: 25566  # Port for the HTTP server (change if needed)
      server-name: "My Legion Mob Arena Server"  # Your server name
    ```
 3. Change `enabled: false` to `enabled: true`
 4. Customize `server-name` to your server's name
-5. Save and restart your server
+5. (Optional) Change `port` if 25566 conflicts with something else
+6. Save and restart your server
 
 ### Step 2: Open the Port
 
-The API needs port 8080 (or whatever you configured) to be accessible:
+The API needs port 25566 (or whatever you configured) to be accessible:
 
 **For Local Servers:**
-- Open port 8080 in your router/firewall
-- Forward port 8080 to your server's local IP
+- Open port 25566 in your router/firewall
+- Forward port 25566 to your server's local IP
 
 **For Pterodactyl/Hosting:**
 - Go to your server's Network settings
-- Add allocation for port 8080
+- Add allocation for port 25566 (or any available port)
 - Set the port in config.yml to match the allocated port
 
 **Test it works:**
-Visit `http://YOUR-SERVER-IP:8080/api/stats` in a browser. You should see JSON data!
+Visit `http://YOUR-SERVER-IP:25566/api/stats` in a browser. You should see JSON data!
 
 ### Step 3: Set Up the Website
 
 1. **Download** the `leaderboard.html` file from this repository
 2. **Open it** in a browser (or host it anywhere - GitHub Pages, your own web server, etc.)
 3. **Enter your API URL** in the config box:
-   - Format: `http://YOUR-SERVER-IP:8080`
-   - Example: `http://123.45.67.89:8080`
+   - Format: `http://YOUR-SERVER-IP:PORT`
+   - Example: `http://123.45.67.89:25566`
 4. Click **"Connect to Server"**
 5. Your leaderboard is now live! 🎉
 
@@ -146,13 +147,14 @@ You have several options for hosting the `leaderboard.html` file:
 **Check these:**
 1. Is the API enabled in config.yml?
 2. Is the server running?
-3. Is port 8080 open and forwarded?
-4. Are you using the correct IP address?
-5. Try accessing `http://YOUR-IP:8080/api/stats` directly in browser
+3. Is the correct port open and forwarded?
+4. Are you using the correct IP address and port?
+5. Try accessing `http://YOUR-IP:25566/api/stats` directly in browser
 
 **Common issues:**
-- **Localhost:** Use `http://localhost:8080` if testing locally
+- **Localhost:** Use `http://localhost:25566` if testing locally
 - **External IP:** Use your public IP if hosting publicly
+- **Port conflict:** If 25566 is already in use, change it in config.yml
 - **HTTPS websites:** Can't connect to HTTP APIs (browser security)
   - Solution: Host the HTML on HTTP too, or set up HTTPS for the API
 
@@ -167,10 +169,10 @@ You have several options for hosting the `leaderboard.html` file:
 Change the port in config.yml:
 ```yaml
 api:
-  port: 8081  # Or any other available port
+  port: 25567  # Or any other available port
 ```
 
-Don't forget to update the port in your firewall/router too!
+Don't forget to update the port in your firewall/router/Pterodactyl allocation too!
 
 ---
 
