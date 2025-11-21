@@ -345,8 +345,20 @@
                             <div class="stat-label">Games Played</div>
                         </div>
                         <div class="stat-item">
+                            <div class="stat-value">${(stats.totalGamesWon || 0).toLocaleString()}</div>
+                            <div class="stat-label">Games Won</div>
+                        </div>
+                        <div class="stat-item">
                             <div class="stat-value">${stats.totalKills.toLocaleString()}</div>
                             <div class="stat-label">Total Kills</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${(stats.totalDeaths || 0).toLocaleString()}</div>
+                            <div class="stat-label">Total Deaths</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${(stats.totalGems || 0).toLocaleString()}</div>
+                            <div class="stat-label">Total Gems</div>
                         </div>
                         <div class="stat-item">
                             <div class="stat-value">${stats.highestRound.toLocaleString()}</div>
@@ -364,12 +376,17 @@
                             <table class="leaderboard-table">
                                 <thead>
                                     <tr>
-                                        <th style="width: 80px;">Rank</th>
+                                        <th style="width: 60px;">Rank</th>
                                         <th>Player</th>
-                                        <th style="text-align: center;">Best Round</th>
+                                        <th style="text-align: center;">Round</th>
                                         <th style="text-align: center;">Games</th>
+                                        <th style="text-align: center;">Won</th>
+                                        <th style="text-align: center;">Win%</th>
                                         <th style="text-align: center;">Kills</th>
+                                        <th style="text-align: center;">Deaths</th>
+                                        <th style="text-align: center;">K/D</th>
                                         <th style="text-align: center;">Gems</th>
+                                        <th style="text-align: center;">Kits</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -384,14 +401,22 @@
                         else if (rank === 2) { rankClass = 'silver'; rankDisplay = '🥈'; }
                         else if (rank === 3) { rankClass = 'bronze'; rankDisplay = '🥉'; }
 
+                        const winRate = player.winRate || 0;
+                        const kdr = player.kdr || 0;
+
                         html += `
                             <tr>
                                 <td><span class="rank ${rankClass}">${rankDisplay}</span></td>
                                 <td><strong>${escapeHtml(player.playerName)}</strong></td>
                                 <td style="text-align: center;"><strong style="color: #667eea; font-size: 1.2em;">${player.highestRound}</strong></td>
                                 <td style="text-align: center;">${player.totalGamesPlayed.toLocaleString()}</td>
+                                <td style="text-align: center;">${(player.gamesWon || 0).toLocaleString()}</td>
+                                <td style="text-align: center;">${winRate.toFixed(1)}%</td>
                                 <td style="text-align: center;">${player.totalKills.toLocaleString()}</td>
+                                <td style="text-align: center;">${(player.totalDeaths || 0).toLocaleString()}</td>
+                                <td style="text-align: center;">${kdr.toFixed(2)}</td>
                                 <td style="text-align: center;">${player.totalGemsEarned.toLocaleString()}</td>
+                                <td style="text-align: center;">${player.unlockedKits || 0}</td>
                             </tr>
                         `;
                     });
@@ -437,11 +462,15 @@
                     <table class="leaderboard-table">
                         <thead>
                             <tr>
-                                <th style="width: 80px;">Rank</th>
+                                <th style="width: 60px;">Rank</th>
                                 <th>Player</th>
-                                <th style="text-align: center;">Best Round</th>
+                                <th style="text-align: center;">Round</th>
                                 <th style="text-align: center;">Games</th>
+                                <th style="text-align: center;">Won</th>
+                                <th style="text-align: center;">Win%</th>
                                 <th style="text-align: center;">Kills</th>
+                                <th style="text-align: center;">Deaths</th>
+                                <th style="text-align: center;">K/D</th>
                                 <th style="text-align: center;">Gems</th>
                             </tr>
                         </thead>
@@ -457,13 +486,20 @@
                     else if (rank === 2) { rankClass = 'silver'; rankDisplay = '🥈'; }
                     else if (rank === 3) { rankClass = 'bronze'; rankDisplay = '🥉'; }
 
+                    const winRate = player.winRate || 0;
+                    const kdr = player.kdr || 0;
+
                     tableHTML += `
                         <tr>
                             <td><span class="rank ${rankClass}">${rankDisplay}</span></td>
                             <td><strong>${escapeHtml(player.playerName)}</strong></td>
                             <td style="text-align: center;"><strong style="color: #667eea; font-size: 1.2em;">${player.highestRound}</strong></td>
                             <td style="text-align: center;">${player.totalGamesPlayed.toLocaleString()}</td>
+                            <td style="text-align: center;">${(player.gamesWon || 0).toLocaleString()}</td>
+                            <td style="text-align: center;">${winRate.toFixed(1)}%</td>
                             <td style="text-align: center;">${player.totalKills.toLocaleString()}</td>
+                            <td style="text-align: center;">${(player.totalDeaths || 0).toLocaleString()}</td>
+                            <td style="text-align: center;">${kdr.toFixed(2)}</td>
                             <td style="text-align: center;">${player.totalGemsEarned.toLocaleString()}</td>
                         </tr>
                     `;
