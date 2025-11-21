@@ -41,7 +41,7 @@ public class StatsAPIServer {
         try {
             app = Javalin.create(config -> {
                 config.showJavalinBanner = false;
-            }).start(port);
+            }).start("0.0.0.0", port); // Bind to all interfaces (0.0.0.0) for Docker/Pterodactyl
 
             // CORS middleware
             app.before(ctx -> {
@@ -56,11 +56,12 @@ public class StatsAPIServer {
             app.get("/api/player/{uuid}", this::getPlayerStats);
             app.options("/*", ctx -> ctx.status(200));
 
-            plugin.getLogger().info("Stats API server started on port " + port);
+            plugin.getLogger().info("Stats API server started on 0.0.0.0:" + port);
             plugin.getLogger().info("API Endpoints:");
-            plugin.getLogger().info("  - http://localhost:" + port + "/api/stats");
-            plugin.getLogger().info("  - http://localhost:" + port + "/api/leaderboard");
-            plugin.getLogger().info("  - http://localhost:" + port + "/api/player/{uuid}");
+            plugin.getLogger().info("  - http://0.0.0.0:" + port + "/api/stats");
+            plugin.getLogger().info("  - http://0.0.0.0:" + port + "/api/leaderboard");
+            plugin.getLogger().info("  - http://0.0.0.0:" + port + "/api/player/{uuid}");
+            plugin.getLogger().info("For Pterodactyl/Docker, use your server IP to access the API");
 
         } catch (Exception e) {
             plugin.getLogger().severe("Failed to start Stats API server: " + e.getMessage());
