@@ -264,11 +264,11 @@
                 <h2>📊 View Live Stats</h2>
 
                 <div class="button-group">
-                    <button class="api-button" onclick="loadStats()">
-                        📈 Server Statistics
+                    <button class="api-button" onclick="loadAllPlayers()">
+                        📊 Arena Stats - All Players
                     </button>
                     <button class="api-button" onclick="loadLeaderboard()">
-                        🏆 View Leaderboard
+                        🏆 Top Players Leaderboard
                     </button>
                     <button class="api-button" onclick="loadRawJSON()">
                         📄 Raw JSON Data
@@ -325,14 +325,16 @@
             display.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
-        async function loadStats() {
-            showDisplay('📈 Server Statistics');
+        async function loadAllPlayers() {
+            showDisplay('📊 Arena Stats - All Players');
 
             try {
                 const stats = await fetchAPI('/api/stats');
+                const players = await fetchAPI('/api/leaderboard');
 
                 const content = document.getElementById('dataContent');
-                content.innerHTML = `
+
+                let html = `
                     <div class="stat-grid">
                         <div class="stat-item">
                             <div class="stat-value">${stats.totalPlayers.toLocaleString()}</div>
@@ -351,19 +353,68 @@
                             <div class="stat-label">Highest Round</div>
                         </div>
                     </div>
+                `;
+
+                if (!players || players.length === 0) {
+                    html += '<div class="loading" style="margin-top: 20px;">No players have played yet!</div>';
+                } else {
+                    html += `
+                        <div style="margin-top: 30px;">
+                            <h3 style="color: #667eea; margin-bottom: 15px; text-align: center;">All Players (${players.length})</h3>
+                            <table class="leaderboard-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 80px;">Rank</th>
+                                        <th>Player</th>
+                                        <th style="text-align: center;">Best Round</th>
+                                        <th style="text-align: center;">Games</th>
+                                        <th style="text-align: center;">Kills</th>
+                                        <th style="text-align: center;">Gems</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+
+                    players.forEach((player, index) => {
+                        const rank = index + 1;
+                        let rankClass = '';
+                        let rankDisplay = `#${rank}`;
+
+                        if (rank === 1) { rankClass = 'gold'; rankDisplay = '🥇'; }
+                        else if (rank === 2) { rankClass = 'silver'; rankDisplay = '🥈'; }
+                        else if (rank === 3) { rankClass = 'bronze'; rankDisplay = '🥉'; }
+
+                        html += `
+                            <tr>
+                                <td><span class="rank ${rankClass}">${rankDisplay}</span></td>
+                                <td><strong>${escapeHtml(player.playerName)}</strong></td>
+                                <td style="text-align: center;"><strong style="color: #667eea; font-size: 1.2em;">${player.highestRound}</strong></td>
+                                <td style="text-align: center;">${player.totalGamesPlayed.toLocaleString()}</td>
+                                <td style="text-align: center;">${player.totalKills.toLocaleString()}</td>
+                                <td style="text-align: center;">${player.totalGemsEarned.toLocaleString()}</td>
+                            </tr>
+                        `;
+                    });
+
+                    html += '</tbody></table>';
+                }
+
+                html += `
                     <div style="text-align: center; margin-top: 20px; color: #666;">
                         <p><strong>Server:</strong> ${stats.serverName}</p>
                         <p style="margin-top: 5px; font-size: 0.9em;">Last updated: ${new Date(stats.timestamp).toLocaleString()}</p>
                     </div>
                 `;
+
+                content.innerHTML = html;
             } catch (error) {
                 document.getElementById('dataContent').innerHTML =
-                    '<div class="error">Failed to load stats. The server may be offline.</div>';
+                    '<div class="error">Failed to load arena stats. The server may be offline.</div>';
             }
         }
 
         async function loadLeaderboard() {
-            showDisplay('🏆 Leaderboard');
+            showDisplay('🏆 Top Players Leaderboard');
 
             try {
                 const players = await fetchAPI('/api/leaderboard');
@@ -375,7 +426,14 @@
                     return;
                 }
 
+                // Show top 10 players for leaderboard view
+                const topPlayers = players.slice(0, 10);
+
                 let tableHTML = `
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <h3 style="color: #667eea;">Top 10 Players</h3>
+                        <p style="color: #666; margin-top: 5px;">Ranked by highest round achieved</p>
+                    </div>
                     <table class="leaderboard-table">
                         <thead>
                             <tr>
@@ -390,7 +448,7 @@
                         <tbody>
                 `;
 
-                players.forEach((player, index) => {
+                topPlayers.forEach((player, index) => {
                     const rank = index + 1;
                     let rankClass = '';
                     let rankDisplay = `#${rank}`;
@@ -412,6 +470,16 @@
                 });
 
                 tableHTML += '</tbody></table>';
+
+                if (players.length > 10) {
+                    tableHTML += `
+                        <div style="text-align: center; margin-top: 15px; color: #666;">
+                            <p>Showing top 10 of ${players.length} players</p>
+                            <p style="font-size: 0.9em; margin-top: 5px;">Click "Arena Stats - All Players" to see everyone</p>
+                        </div>
+                    `;
+                }
+
                 content.innerHTML = tableHTML;
 
             } catch (error) {
