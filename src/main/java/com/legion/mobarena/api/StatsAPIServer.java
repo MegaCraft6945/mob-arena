@@ -59,20 +59,7 @@ public class StatsAPIServer {
             app.get("/api/player/{uuid}", this::getPlayerStats);
             app.options("/*", ctx -> ctx.status(200));
 
-            plugin.getLogger().info("===========================================");
-            plugin.getLogger().info("Stats API server started on 0.0.0.0:" + port);
-            plugin.getLogger().info("===========================================");
-            plugin.getLogger().info("WEB INTERFACE:");
-            plugin.getLogger().info("  http://YOUR-SERVER-IP:" + port + "/");
-            plugin.getLogger().info("===========================================");
-            plugin.getLogger().info("API Endpoints:");
-            plugin.getLogger().info("  http://YOUR-SERVER-IP:" + port + "/api/stats");
-            plugin.getLogger().info("  http://YOUR-SERVER-IP:" + port + "/api/leaderboard");
-            plugin.getLogger().info("  http://YOUR-SERVER-IP:" + port + "/api/player/{uuid}");
-            plugin.getLogger().info("===========================================");
-            plugin.getLogger().info("Replace YOUR-SERVER-IP with your server's IP address");
-            plugin.getLogger().info("Example: http://54.37.245.44:" + port + "/");
-            plugin.getLogger().info("===========================================");
+            plugin.getLogger().info("Stats API started on port " + port + " | Web: http://YOUR-SERVER-IP:" + port + "/");
 
         } catch (Exception e) {
             plugin.getLogger().severe("Failed to start Stats API server: " + e.getMessage());
