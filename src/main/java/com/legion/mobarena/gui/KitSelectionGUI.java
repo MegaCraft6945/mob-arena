@@ -86,10 +86,10 @@ public class KitSelectionGUI {
                     if (playerData.getGems() >= kit.getGemCost()) {
                         playerData.removeGems(kit.getGemCost());
                         plugin.getPlayerDataManager().unlockKit(player.getUniqueId(), kit.getName());
-                        player.sendMessage(plugin.getConfig().getString("messages.kit-purchased")
+                        player.sendMessage(plugin.getMessage("kit-purchased")
                                 .replace("{kit}", kit.getDisplayName()));
                     } else {
-                        player.sendMessage(plugin.getConfig().getString("messages.not-enough-gems"));
+                        player.sendMessage(plugin.getMessage("not-enough-gems"));
                         return;
                     }
                 }

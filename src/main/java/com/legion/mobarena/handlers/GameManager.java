@@ -44,7 +44,7 @@ public class GameManager {
 
     public void joinGame(Player player, Arena arena) {
         if (isPlayerInGame(player.getUniqueId())) {
-            player.sendMessage(plugin.getConfig().getString("messages.prefix") + "§cYou are already in a game!");
+            player.sendMessage(plugin.getMessage("prefix") + "§cYou are already in a game!");
             return;
         }
 
@@ -55,7 +55,7 @@ public class GameManager {
         }
 
         if (game.getPlayers().size() >= plugin.getConfig().getInt("game.max-players", 8)) {
-            player.sendMessage(plugin.getConfig().getString("messages.prefix") + "§cThis arena is full!");
+            player.sendMessage(plugin.getMessage("prefix") + "§cThis arena is full!");
             return;
         }
 
@@ -91,7 +91,7 @@ public class GameManager {
         if (game == null) return;
 
         game.setPlayerKit(player.getUniqueId(), kit);
-        player.sendMessage(plugin.getConfig().getString("messages.kit-selected")
+        player.sendMessage(plugin.getMessage("kit-selected")
                 .replace("{kit}", kit.getDisplayName()));
 
         // Check if all players are ready
