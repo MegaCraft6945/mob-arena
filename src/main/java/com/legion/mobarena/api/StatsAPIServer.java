@@ -7,6 +7,8 @@ import com.legion.mobarena.models.PlayerData;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +53,7 @@ public class StatsAPIServer {
             });
 
             // Register routes
+            app.get("/", this::serveStatsPage);
             app.get("/api/stats", this::getStats);
             app.get("/api/leaderboard", this::getLeaderboard);
             app.get("/api/player/{uuid}", this::getPlayerStats);
@@ -59,13 +62,16 @@ public class StatsAPIServer {
             plugin.getLogger().info("===========================================");
             plugin.getLogger().info("Stats API server started on 0.0.0.0:" + port);
             plugin.getLogger().info("===========================================");
-            plugin.getLogger().info("API Endpoints (accessible from anywhere):");
+            plugin.getLogger().info("WEB INTERFACE:");
+            plugin.getLogger().info("  http://YOUR-SERVER-IP:" + port + "/");
+            plugin.getLogger().info("===========================================");
+            plugin.getLogger().info("API Endpoints:");
             plugin.getLogger().info("  http://YOUR-SERVER-IP:" + port + "/api/stats");
             plugin.getLogger().info("  http://YOUR-SERVER-IP:" + port + "/api/leaderboard");
             plugin.getLogger().info("  http://YOUR-SERVER-IP:" + port + "/api/player/{uuid}");
             plugin.getLogger().info("===========================================");
             plugin.getLogger().info("Replace YOUR-SERVER-IP with your server's IP address");
-            plugin.getLogger().info("Example: http://54.37.245.44:" + port + "/api/stats");
+            plugin.getLogger().info("Example: http://54.37.245.44:" + port + "/");
             plugin.getLogger().info("===========================================");
 
         } catch (Exception e) {
@@ -81,6 +87,25 @@ public class StatsAPIServer {
         if (app != null) {
             app.stop();
             plugin.getLogger().info("Stats API server stopped");
+        }
+    }
+
+    /**
+     * GET / - Serve the stats web interface
+     */
+    private void serveStatsPage(Context ctx) {
+        try {
+            InputStream inputStream = plugin.getResource("stats.html");
+            if (inputStream == null) {
+                ctx.status(404).result("Stats page not found");
+                return;
+            }
+
+            String html = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            ctx.contentType("text/html").result(html);
+
+        } catch (Exception e) {
+            ctx.status(500).result("Error loading stats page: " + e.getMessage());
         }
     }
 
