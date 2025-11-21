@@ -568,6 +568,7 @@ public class GameManager {
                 if (playerData != null) {
                     playerData.addGems(gems);
                     playerData.setHighestRound(round);
+                    plugin.getPlayerDataManager().savePlayerData(playerId);
                 }
             }
         }
@@ -638,6 +639,7 @@ public class GameManager {
                 if (playerData != null) {
                     playerData.addGameWon();
                     playerData.addGamePlayed();
+                    plugin.getPlayerDataManager().savePlayerData(playerId);
                 }
             }
         }
@@ -677,6 +679,7 @@ public class GameManager {
         if (playerData != null) {
             playerData.addDeath();
             playerData.addGamePlayed();
+            plugin.getPlayerDataManager().savePlayerData(player.getUniqueId());
         }
 
         // Check if all players are dead
