@@ -69,11 +69,4 @@ spawn:
   lobby-yaw: 0
   lobby-pitch: 0
 
-# Stats API Settings
-# Enables a REST API server for displaying live leaderboard on a website
-api:
-  enabled: true  # Set to true to enable the Stats API
-  port: 25566  # Port for the HTTP server (default: 25566, do NOT use 25565 - that's the Minecraft port!)
-  server-name: "Legion Mob Arena"  # Display name for your server
-
 # Note: Messages have been moved to messages.yml
