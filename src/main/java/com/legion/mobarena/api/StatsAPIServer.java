@@ -102,7 +102,7 @@ public class StatsAPIServer {
      */
     private void getStats(Context ctx) {
         // Fetch from database asynchronously
-        CompletableFuture<Map<String, Object>> future = CompletableFuture.supplyAsync(() -> {
+        ctx.future(() -> CompletableFuture.supplyAsync(() -> {
             List<PlayerData> allData = plugin.getPlayerDataManager().getAllPlayerDataFromDatabase();
 
             Map<String, Object> stats = new HashMap<>();
@@ -121,9 +121,7 @@ public class StatsAPIServer {
             stats.put("timestamp", System.currentTimeMillis());
 
             return stats;
-        });
-
-        ctx.future(future);
+        }));
     }
 
     /**
@@ -131,7 +129,7 @@ public class StatsAPIServer {
      */
     private void getLeaderboard(Context ctx) {
         // Fetch from database asynchronously
-        CompletableFuture<List<Map<String, Object>>> future = CompletableFuture.supplyAsync(() -> {
+        ctx.future(() -> CompletableFuture.supplyAsync(() -> {
             List<PlayerData> allData = plugin.getPlayerDataManager().getAllPlayerDataFromDatabase();
             List<Map<String, Object>> leaderboard = new ArrayList<>();
 
@@ -168,9 +166,7 @@ public class StatsAPIServer {
             });
 
             return leaderboard;
-        });
-
-        ctx.future(future);
+        }));
     }
 
     /**
@@ -179,7 +175,7 @@ public class StatsAPIServer {
     private void getPlayerStats(Context ctx) {
         String uuidStr = ctx.pathParam("uuid");
 
-        CompletableFuture<Map<String, Object>> future = CompletableFuture.supplyAsync(() -> {
+        ctx.future(() -> CompletableFuture.supplyAsync(() -> {
             try {
                 UUID uuid = UUID.fromString(uuidStr);
 
@@ -222,8 +218,6 @@ public class StatsAPIServer {
                 ctx.status(400);
                 return Map.of("error", "Invalid UUID format");
             }
-        });
-
-        ctx.future(future);
+        }));
     }
 }
