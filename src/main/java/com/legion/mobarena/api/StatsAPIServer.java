@@ -40,6 +40,16 @@ public class StatsAPIServer {
             return;
         }
 
+        // Validate port is not the Minecraft server port
+        if (port == 25565) {
+            plugin.getLogger().severe("========================================");
+            plugin.getLogger().severe("ERROR: API port is set to 25565!");
+            plugin.getLogger().severe("Port 25565 is used by the Minecraft server.");
+            plugin.getLogger().severe("Please change 'api.port' in config.yml to a different port (recommended: 25566)");
+            plugin.getLogger().severe("========================================");
+            return;
+        }
+
         try {
             app = Javalin.create(config -> {
                 config.showJavalinBanner = false;
@@ -59,10 +69,27 @@ public class StatsAPIServer {
             app.get("/api/player/{uuid}", this::getPlayerStats);
             app.options("/*", ctx -> ctx.status(200));
 
-            plugin.getLogger().info("Stats API started on port " + port + " | Web: http://YOUR-SERVER-IP:" + port + "/");
+            plugin.getLogger().info("========================================");
+            plugin.getLogger().info("Stats API started successfully!");
+            plugin.getLogger().info("Port: " + port);
+            plugin.getLogger().info("Local: http://localhost:" + port + "/");
+            plugin.getLogger().info("Web: http://YOUR-SERVER-IP:" + port + "/");
+            plugin.getLogger().info("========================================");
 
         } catch (Exception e) {
-            plugin.getLogger().severe("Failed to start Stats API server: " + e.getMessage());
+            plugin.getLogger().severe("========================================");
+            plugin.getLogger().severe("Failed to start Stats API server!");
+            plugin.getLogger().severe("Error: " + e.getMessage());
+
+            if (e.getMessage().contains("Port already in use") || e.getMessage().contains("Address already in use")) {
+                plugin.getLogger().severe("");
+                plugin.getLogger().severe("Port " + port + " is already in use by another application.");
+                plugin.getLogger().severe("Solutions:");
+                plugin.getLogger().severe("1. Change 'api.port' in config.yml to a different port");
+                plugin.getLogger().severe("2. Stop the other application using port " + port);
+                plugin.getLogger().severe("3. If using port 25565, that's the Minecraft server port - use 25566 instead");
+            }
+            plugin.getLogger().severe("========================================");
             e.printStackTrace();
         }
     }
