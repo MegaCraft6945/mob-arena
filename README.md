@@ -155,29 +155,27 @@ The plugin includes a built-in leaderboard system that tracks player statistics:
 - Total kills
 - Total gems earned
 
-### For Server Owners: Display Your Leaderboard
+### Live Stats API
 
-Want to show your server's leaderboard on a free website? Choose your setup:
+The plugin includes a **built-in REST API server** for displaying live leaderboard stats on any website!
 
-#### Option 1: Live MySQL Leaderboard (Recommended)
-✅ **Always up-to-date** - Reads directly from your database
-✅ **100% automatic** - No manual updates needed
-✅ **100% free** - Uses Vercel free tier
+✅ **Real-time stats** - Always up-to-date from your database
+✅ **No external hosting** - API runs directly in the plugin
+✅ **100% free** - No third-party services
+✅ **Simple setup** - Enable in config and open a port
 
-See **[LIVE_MYSQL_LEADERBOARD.md](LIVE_MYSQL_LEADERBOARD.md)** for setup guide!
+See **[LIVE_STATS_API_SETUP.md](LIVE_STATS_API_SETUP.md)** for complete setup instructions!
 
-#### Option 2: Manual Update Leaderboard
-✅ **Simpler setup** - Fork and deploy in 5 minutes
-✅ **100% free** - GitHub Pages only
-✅ **Manual or scripted updates** - You control when it updates
+**Quick Start:**
+1. Enable API in `config.yml`
+2. Open port 8080
+3. Use the included `leaderboard.html` file
+4. Your live leaderboard is ready!
 
-See **[LEADERBOARD_FOR_SERVER_OWNERS.md](LEADERBOARD_FOR_SERVER_OWNERS.md)** for setup guide!
-
-Both options include:
-- Beautiful, responsive website design
-- Auto-refreshing display
-- Mobile-friendly layout
-- Custom domain support
+**API Endpoints:**
+- `GET /api/stats` - Server summary
+- `GET /api/leaderboard` - Full leaderboard
+- `GET /api/player/{uuid}` - Player stats
 
 ### In-Game Stats
 

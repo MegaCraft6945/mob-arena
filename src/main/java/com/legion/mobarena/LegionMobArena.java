@@ -1,5 +1,6 @@
 package com.legion.mobarena;
 
+import com.legion.mobarena.api.StatsAPIServer;
 import com.legion.mobarena.commands.AdminCommand;
 import com.legion.mobarena.commands.ArenaCommand;
 import com.legion.mobarena.database.DatabaseManager;
@@ -27,6 +28,7 @@ public class LegionMobArena extends JavaPlugin {
     private KitManager kitManager;
     private LeaderboardManager leaderboardManager;
     private PlayerDataManager playerDataManager;
+    private StatsAPIServer apiServer;
     private FileConfiguration messagesConfig;
     private PlayerInteractListener playerInteractListener;
     private AdminMenuGUI adminMenuGUI;
@@ -67,11 +69,20 @@ public class LegionMobArena extends JavaPlugin {
             getLogger().info("PlaceholderAPI expansion registered!");
         }
 
+        // Start Stats API server
+        this.apiServer = new StatsAPIServer(this);
+        apiServer.start();
+
         getLogger().info("Legion Mob Arena has been enabled!");
     }
 
     @Override
     public void onDisable() {
+        // Stop Stats API server
+        if (apiServer != null) {
+            apiServer.stop();
+        }
+
         // End all active games
         if (gameManager != null) {
             gameManager.endAllGames();
