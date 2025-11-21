@@ -56,12 +56,17 @@ public class StatsAPIServer {
             app.get("/api/player/{uuid}", this::getPlayerStats);
             app.options("/*", ctx -> ctx.status(200));
 
+            plugin.getLogger().info("===========================================");
             plugin.getLogger().info("Stats API server started on 0.0.0.0:" + port);
-            plugin.getLogger().info("API Endpoints:");
-            plugin.getLogger().info("  - http://0.0.0.0:" + port + "/api/stats");
-            plugin.getLogger().info("  - http://0.0.0.0:" + port + "/api/leaderboard");
-            plugin.getLogger().info("  - http://0.0.0.0:" + port + "/api/player/{uuid}");
-            plugin.getLogger().info("For Pterodactyl/Docker, use your server IP to access the API");
+            plugin.getLogger().info("===========================================");
+            plugin.getLogger().info("API Endpoints (accessible from anywhere):");
+            plugin.getLogger().info("  http://YOUR-SERVER-IP:" + port + "/api/stats");
+            plugin.getLogger().info("  http://YOUR-SERVER-IP:" + port + "/api/leaderboard");
+            plugin.getLogger().info("  http://YOUR-SERVER-IP:" + port + "/api/player/{uuid}");
+            plugin.getLogger().info("===========================================");
+            plugin.getLogger().info("Replace YOUR-SERVER-IP with your server's IP address");
+            plugin.getLogger().info("Example: http://54.37.245.44:" + port + "/api/stats");
+            plugin.getLogger().info("===========================================");
 
         } catch (Exception e) {
             plugin.getLogger().severe("Failed to start Stats API server: " + e.getMessage());
