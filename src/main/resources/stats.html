@@ -177,9 +177,115 @@
             opacity: 0.9;
         }
 
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
         @media (max-width: 768px) {
-            header h1 { font-size: 2em; }
-            .button-group { grid-template-columns: 1fr; }
+            body {
+                padding: 10px;
+            }
+
+            header {
+                margin-bottom: 20px;
+                padding: 20px 15px;
+            }
+
+            header h1 {
+                font-size: 2em;
+            }
+
+            header h2 {
+                font-size: 1.2em;
+            }
+
+            .button-group {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .api-button {
+                padding: 15px;
+                font-size: 1em;
+            }
+
+            .stats-summary {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+
+            .stat-card {
+                padding: 20px 10px;
+            }
+
+            .stat-value {
+                font-size: 1.8em;
+            }
+
+            .stat-label {
+                font-size: 0.85em;
+            }
+
+            .leaderboard-table {
+                font-size: 0.85em;
+            }
+
+            .leaderboard-table th,
+            .leaderboard-table td {
+                padding: 10px 8px;
+                white-space: nowrap;
+            }
+
+            .rank {
+                font-size: 1.1em;
+            }
+
+            .rank.gold { font-size: 1.3em; }
+            .rank.silver { font-size: 1.2em; }
+            .rank.bronze { font-size: 1.1em; }
+
+            footer {
+                margin-top: 20px;
+                padding: 15px;
+                font-size: 0.9em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.5em;
+            }
+
+            header h2 {
+                font-size: 1em;
+            }
+
+            .stats-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat-value {
+                font-size: 1.5em;
+            }
+
+            .stat-label {
+                font-size: 0.75em;
+            }
+
+            .leaderboard-table {
+                font-size: 0.75em;
+            }
+
+            .leaderboard-table th,
+            .leaderboard-table td {
+                padding: 8px 5px;
+            }
+
+            footer p {
+                font-size: 0.85em;
+            }
         }
     </style>
 </head>
@@ -270,6 +376,7 @@
                 } else {
                     html += `
                         <div class="leaderboard-container">
+                            <div class="table-wrapper">
                             <table class="leaderboard-table">
                                 <thead>
                                     <tr>
@@ -315,7 +422,7 @@
                         `;
                     });
 
-                    html += '</tbody></table></div>';
+                    html += '</tbody></table></div></div>';
                 }
 
                 document.getElementById('content').innerHTML = html;
@@ -342,6 +449,7 @@
 
                 let html = `
                     <div class="leaderboard-container">
+                        <div class="table-wrapper">
                         <table class="leaderboard-table">
                             <thead>
                                 <tr>
@@ -385,7 +493,7 @@
                     `;
                 });
 
-                html += '</tbody></table></div>';
+                html += '</tbody></table></div></div>';
 
                 if (players.length > 10) {
                     html += `<div style="text-align: center; margin-top: 20px; color: white;">
