@@ -163,19 +163,34 @@ The plugin includes a **built-in REST API server** for displaying live leaderboa
 ✅ **No external hosting** - API runs directly in the plugin
 ✅ **100% free** - No third-party services
 ✅ **Simple setup** - Enable in config and open a port
+✅ **GitHub Pages ready** - Host the leaderboard website for free
 
 See **[LIVE_STATS_API_SETUP.md](LIVE_STATS_API_SETUP.md)** for complete setup instructions!
 
 **Quick Start:**
 1. Enable API in `config.yml`
 2. Open port 25566 (or configure a different port)
-3. Use the included `leaderboard.html` file
-4. Your live leaderboard is ready!
+3. Enable GitHub Pages from the `/docs` folder
+4. Your live leaderboard website is ready at `https://YOUR-USERNAME.github.io/mob-arena/`
 
 **API Endpoints:**
 - `GET /api/stats` - Server summary
 - `GET /api/leaderboard` - Full leaderboard
 - `GET /api/player/{uuid}` - Player stats
+
+### GitHub Pages Leaderboard
+
+This repository includes a ready-to-deploy leaderboard website in the `/docs` folder!
+
+**To enable:**
+1. Go to repository Settings → Pages
+2. Source: "Deploy from a branch"
+3. Branch: Select your branch, Folder: `/docs`
+4. Click Save
+
+Your leaderboard will be live at `https://YOUR-USERNAME.github.io/mob-arena/` in 2-3 minutes!
+
+See **[docs/README.md](docs/README.md)** for detailed setup instructions.
 
 ### In-Game Stats
 
