@@ -48,6 +48,14 @@ public class GameManager {
             return;
         }
 
+        // Ensure player data is loaded
+        if (plugin.getPlayerDataManager().getPlayerData(player.getUniqueId()) == null) {
+            player.sendMessage(plugin.getMessage("prefix") + "§cLoading your data, please try again...");
+            // Try loading it again if it wasn't loaded
+            plugin.getPlayerDataManager().loadPlayerData(player);
+            return;
+        }
+
         Game game = activeGames.get(arena);
         if (game == null) {
             game = new Game(arena);

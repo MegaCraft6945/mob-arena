@@ -33,16 +33,28 @@ public class PlayerDataManager {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
                 Connection conn = plugin.getDatabaseManager().getConnection();
-                if (conn == null) return;
 
-                // Load player data
+                PlayerData data;
+
+                if (conn == null) {
+                    // Database disabled - create in-memory player data
+                    data = new PlayerData(uuid, player.getName());
+                    data.unlockKit("warrior"); // Free kit
+
+                    // Cache immediately on main thread
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        playerDataCache.put(uuid, data);
+                    });
+                    return;
+                }
+
+                // Load player data from database
                 PreparedStatement ps = conn.prepareStatement(
                         "SELECT * FROM player_data WHERE uuid = ?"
                 );
                 ps.setString(1, uuid.toString());
                 ResultSet rs = ps.executeQuery();
 
-                PlayerData data;
                 if (rs.next()) {
                     data = new PlayerData(uuid, player.getName());
                     data.setGems(rs.getInt("gems"));
