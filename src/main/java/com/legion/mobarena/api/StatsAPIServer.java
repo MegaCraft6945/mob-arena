@@ -91,10 +91,16 @@ public class StatsAPIServer {
         Map<String, Object> stats = new HashMap<>();
         Map<UUID, PlayerData> allData = plugin.getPlayerDataManager().getAllPlayerData();
 
+        // Basic stats
         stats.put("totalPlayers", allData.size());
         stats.put("totalGames", allData.values().stream().mapToInt(PlayerData::getGamesPlayed).sum());
+        stats.put("totalGamesWon", allData.values().stream().mapToInt(PlayerData::getGamesWon).sum());
         stats.put("totalKills", allData.values().stream().mapToInt(PlayerData::getTotalKills).sum());
+        stats.put("totalDeaths", allData.values().stream().mapToInt(PlayerData::getTotalDeaths).sum());
+        stats.put("totalGems", allData.values().stream().mapToInt(PlayerData::getGems).sum());
         stats.put("highestRound", allData.values().stream().mapToInt(PlayerData::getHighestRound).max().orElse(0));
+
+        // Server info
         stats.put("serverName", plugin.getConfig().getString("api.server-name", "Legion Mob Arena"));
         stats.put("timestamp", System.currentTimeMillis());
 
@@ -114,9 +120,22 @@ public class StatsAPIServer {
             entry.put("playerId", data.getUuid().toString());
             entry.put("highestRound", data.getHighestRound());
             entry.put("totalGamesPlayed", data.getGamesPlayed());
+            entry.put("gamesWon", data.getGamesWon());
             entry.put("totalKills", data.getTotalKills());
+            entry.put("totalDeaths", data.getTotalDeaths());
             entry.put("totalGemsEarned", data.getGems());
+            entry.put("unlockedKits", data.getUnlockedKits().size());
             entry.put("lastPlayed", data.getLastSeen());
+
+            // Calculated stats
+            double kdr = data.getTotalDeaths() > 0 ?
+                    (double) data.getTotalKills() / data.getTotalDeaths() : data.getTotalKills();
+            double winRate = data.getGamesPlayed() > 0 ?
+                    (double) data.getGamesWon() / data.getGamesPlayed() * 100 : 0;
+
+            entry.put("kdr", Math.round(kdr * 100.0) / 100.0);
+            entry.put("winRate", Math.round(winRate * 10.0) / 10.0);
+
             leaderboard.add(entry);
         }
 
