@@ -284,10 +284,11 @@
             </div>
 
             <div class="info-box">
-                <h3>ℹ️ How to Use</h3>
+                <h3>ℹ️ Live Stats Dashboard</h3>
                 <p>
-                    <strong>Click the buttons above</strong> to view live stats and leaderboards from the server.
-                    Data updates in real-time as players complete games!
+                    <strong>This page auto-loads and refreshes every 30 seconds!</strong>
+                    Click the buttons above to switch between different views.
+                    All data updates automatically as players complete games.
                 </p>
                 <p style="margin-top: 10px;">
                     <strong>Server:</strong> BlazeKitchen MC<br>
@@ -304,6 +305,8 @@
     <script>
         const API_BASE_URL = 'http://54.37.245.44:2001';
         const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+        let autoRefreshInterval = null;
+        let currentView = null;
 
         async function fetchAPI(endpoint) {
             const url = `${CORS_PROXY}${encodeURIComponent(API_BASE_URL + endpoint)}`;
@@ -325,8 +328,28 @@
             display.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
+        function startAutoRefresh(viewFunction, viewName) {
+            // Stop any existing auto-refresh
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+
+            currentView = viewName;
+
+            // Start new auto-refresh (every 30 seconds)
+            autoRefreshInterval = setInterval(() => {
+                viewFunction();
+            }, 30000);
+        }
+
+        // Auto-load Arena Stats on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadAllPlayers();
+        });
+
         async function loadAllPlayers() {
-            showDisplay('📊 Arena Stats - All Players');
+            showDisplay('📊 Arena Stats - All Players (Auto-refreshing every 30s)');
+            startAutoRefresh(loadAllPlayers, 'allPlayers');
 
             try {
                 const stats = await fetchAPI('/api/stats');
@@ -427,7 +450,8 @@
                 html += `
                     <div style="text-align: center; margin-top: 20px; color: #666;">
                         <p><strong>Server:</strong> ${stats.serverName}</p>
-                        <p style="margin-top: 5px; font-size: 0.9em;">Last updated: ${new Date(stats.timestamp).toLocaleString()}</p>
+                        <p style="margin-top: 5px; font-size: 0.9em;">Last updated: ${new Date().toLocaleString()}</p>
+                        <p style="margin-top: 5px; font-size: 0.85em; color: #999;">⟳ Auto-refreshing every 30 seconds</p>
                     </div>
                 `;
 
@@ -439,7 +463,8 @@
         }
 
         async function loadLeaderboard() {
-            showDisplay('🏆 Top Players Leaderboard');
+            showDisplay('🏆 Top Players Leaderboard (Auto-refreshing every 30s)');
+            startAutoRefresh(loadLeaderboard, 'leaderboard');
 
             try {
                 const players = await fetchAPI('/api/leaderboard');
@@ -525,7 +550,8 @@
         }
 
         async function loadRawJSON() {
-            showDisplay('📄 Raw JSON Data');
+            showDisplay('📄 Raw JSON Data (Auto-refreshing every 30s)');
+            startAutoRefresh(loadRawJSON, 'rawJSON');
 
             try {
                 const stats = await fetchAPI('/api/stats');
