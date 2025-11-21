@@ -102,7 +102,7 @@ public class StatsAPIServer {
      */
     private void getStats(Context ctx) {
         // Fetch from database asynchronously
-        ctx.future(() -> CompletableFuture.supplyAsync(() -> {
+        CompletableFuture<Map<String, Object>> future = CompletableFuture.supplyAsync(() -> {
             List<PlayerData> allData = plugin.getPlayerDataManager().getAllPlayerDataFromDatabase();
 
             Map<String, Object> stats = new HashMap<>();
@@ -121,7 +121,9 @@ public class StatsAPIServer {
             stats.put("timestamp", System.currentTimeMillis());
 
             return stats;
-        }));
+        });
+
+        ctx.future(future);
     }
 
     /**
@@ -129,7 +131,7 @@ public class StatsAPIServer {
      */
     private void getLeaderboard(Context ctx) {
         // Fetch from database asynchronously
-        ctx.future(() -> CompletableFuture.supplyAsync(() -> {
+        CompletableFuture<List<Map<String, Object>>> future = CompletableFuture.supplyAsync(() -> {
             List<PlayerData> allData = plugin.getPlayerDataManager().getAllPlayerDataFromDatabase();
             List<Map<String, Object>> leaderboard = new ArrayList<>();
 
@@ -166,7 +168,9 @@ public class StatsAPIServer {
             });
 
             return leaderboard;
-        }));
+        });
+
+        ctx.future(future);
     }
 
     /**
@@ -175,7 +179,7 @@ public class StatsAPIServer {
     private void getPlayerStats(Context ctx) {
         String uuidStr = ctx.pathParam("uuid");
 
-        ctx.future(() -> CompletableFuture.supplyAsync(() -> {
+        CompletableFuture<Map<String, Object>> future = CompletableFuture.supplyAsync(() -> {
             try {
                 UUID uuid = UUID.fromString(uuidStr);
 
@@ -192,8 +196,8 @@ public class StatsAPIServer {
                 }
 
                 if (data == null) {
-                    ctx.status(404).json(Map.of("error", "Player not found"));
-                    return null;
+                    ctx.status(404);
+                    return Map.of("error", "Player not found");
                 }
 
                 Map<String, Object> playerStats = new HashMap<>();
@@ -215,9 +219,11 @@ public class StatsAPIServer {
                 return playerStats;
 
             } catch (IllegalArgumentException e) {
-                ctx.status(400).json(Map.of("error", "Invalid UUID format"));
-                return null;
+                ctx.status(400);
+                return Map.of("error", "Invalid UUID format");
             }
-        }));
+        });
+
+        ctx.future(future);
     }
 }
