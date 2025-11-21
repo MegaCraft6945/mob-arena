@@ -332,26 +332,55 @@
     </div>
 
     <!-- Load configuration first -->
-    <script src="config.js"></script>
+    <script src="config.js" onerror="handleConfigError()"></script>
 
     <script>
         let autoRefreshInterval = null;
+        let configLoaded = false;
 
-        // Check if config is properly set
-        if (!CONFIG || CONFIG.API_BASE_URL === 'http://YOUR-SERVER-IP:25566') {
+        // Function to handle config.js loading error
+        function handleConfigError() {
             document.getElementById('content').innerHTML = `
                 <div class="error">
-                    <h3>⚠️ Configuration Required</h3>
-                    <p><strong>Please update config.js with your server's IP address!</strong></p>
-                    <p>1. Open <code>config.js</code> in a text editor</p>
-                    <p>2. Replace <code>YOUR-SERVER-IP</code> with your actual server IP</p>
-                    <p>3. Example: <code>API_BASE_URL: 'http://123.45.67.89:25566'</code></p>
-                    <p>4. Make sure the API is enabled in your server's config.yml</p>
+                    <h3>❌ config.js Not Found</h3>
+                    <p><strong>The configuration file could not be loaded!</strong></p>
+                    <p><strong>Solutions:</strong></p>
+                    <p>1. Make sure <code>config.js</code> is in the same folder as <code>index.html</code></p>
+                    <p>2. If testing locally, use a local web server (not file://)</p>
+                    <p>3. If on InfinityFree, make sure you uploaded BOTH files:</p>
+                    <p>&nbsp;&nbsp;&nbsp;• index.html</p>
+                    <p>&nbsp;&nbsp;&nbsp;• config.js</p>
+                    <p style="margin-top: 15px; padding: 10px; background: #fff3cd; color: #856404; border-radius: 5px;">
+                        <strong>Testing locally?</strong><br>
+                        Use: <code>python -m http.server 8000</code><br>
+                        Then visit: <code>http://localhost:8000</code>
+                    </p>
                 </div>
             `;
         }
 
+        // Check if config is properly set
+        if (typeof CONFIG !== 'undefined') {
+            configLoaded = true;
+            if (CONFIG.API_BASE_URL === 'http://YOUR-SERVER-IP:25566') {
+                document.getElementById('content').innerHTML = `
+                    <div class="error">
+                        <h3>⚠️ Configuration Required</h3>
+                        <p><strong>Please update config.js with your server's IP address!</strong></p>
+                        <p>1. Open <code>config.js</code> in a text editor</p>
+                        <p>2. Replace <code>YOUR-SERVER-IP</code> with your actual server IP</p>
+                        <p>3. Example: <code>API_BASE_URL: 'http://123.45.67.89:25566'</code></p>
+                        <p>4. Make sure the API is enabled in your server's config.yml</p>
+                        <p>5. Ensure port 25566 is open in your firewall</p>
+                    </div>
+                `;
+            }
+        }
+
         async function fetchAPI(endpoint) {
+            if (typeof CONFIG === 'undefined') {
+                throw new Error('Configuration not loaded');
+            }
             const url = CONFIG.API_BASE_URL + endpoint;
             const response = await fetch(url);
             if (!response.ok) throw new Error('Failed to fetch from ' + url);
@@ -360,11 +389,12 @@
 
         function startAutoRefresh(viewFunction) {
             if (autoRefreshInterval) clearInterval(autoRefreshInterval);
-            autoRefreshInterval = setInterval(viewFunction, CONFIG.REFRESH_INTERVAL || 30000);
+            const interval = (typeof CONFIG !== 'undefined' && CONFIG.REFRESH_INTERVAL) ? CONFIG.REFRESH_INTERVAL : 30000;
+            autoRefreshInterval = setInterval(viewFunction, interval);
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            if (CONFIG && CONFIG.API_BASE_URL !== 'http://YOUR-SERVER-IP:25566') {
+            if (typeof CONFIG !== 'undefined' && CONFIG.API_BASE_URL !== 'http://YOUR-SERVER-IP:25566') {
                 loadAllPlayers();
             }
         });
@@ -467,6 +497,7 @@
                 document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
 
             } catch (error) {
+                const apiUrl = (typeof CONFIG !== 'undefined') ? CONFIG.API_BASE_URL : 'Not configured';
                 document.getElementById('content').innerHTML = `
                     <div class="error">
                         <h3>❌ Failed to load stats</h3>
@@ -474,9 +505,9 @@
                         <p>Please check:</p>
                         <p>1. Your server is online and running</p>
                         <p>2. API is enabled in config.yml</p>
-                        <p>3. Port ${CONFIG.API_BASE_URL} is accessible</p>
-                        <p>4. Firewall/port forwarding is configured</p>
-                        <p style="margin-top: 15px; font-size: 0.9em;">Error: ${error.message}</p>
+                        <p>3. Server URL: <code>${apiUrl}</code></p>
+                        <p>4. Port 25566 is open in firewall/port forwarding</p>
+                        <p style="margin-top: 15px; font-size: 0.9em; color: #666;">Error: ${error.message}</p>
                     </div>
                 `;
             }
@@ -553,10 +584,13 @@
                 document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
 
             } catch (error) {
+                const apiUrl = (typeof CONFIG !== 'undefined') ? CONFIG.API_BASE_URL : 'Not configured';
                 document.getElementById('content').innerHTML = `
                     <div class="error">
                         <h3>❌ Failed to load leaderboard</h3>
-                        <p>Error: ${error.message}</p>
+                        <p><strong>Cannot connect to the server API</strong></p>
+                        <p>Server URL: <code>${apiUrl}</code></p>
+                        <p style="margin-top: 15px; font-size: 0.9em; color: #666;">Error: ${error.message}</p>
                     </div>
                 `;
             }
