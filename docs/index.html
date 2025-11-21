@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Legion Mob Arena - Live Leaderboard</title>
+    <title>Legion Mob Arena - Stats API</title>
     <style>
         * {
             margin: 0;
@@ -16,356 +16,429 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         header {
             text-align: center;
-            color: white;
             margin-bottom: 40px;
-            padding: 30px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
         }
 
         header h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        header h2 {
-            font-size: 1.5em;
-            font-weight: 300;
-            opacity: 0.9;
-        }
-
-        .stats-summary {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 30px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-value {
             font-size: 2.5em;
-            font-weight: bold;
             color: #667eea;
             margin-bottom: 10px;
         }
 
-        .stat-label {
-            font-size: 1em;
+        header p {
+            font-size: 1.2em;
             color: #666;
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
-        .leaderboard-container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        .api-links {
+            margin: 30px 0;
         }
 
-        .leaderboard-header {
+        .api-links h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .button-group {
             display: grid;
-            grid-template-columns: 80px 1fr 120px 100px 100px 100px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 15px;
-            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .api-button {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 0.9em;
+            padding: 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .leaderboard-body {
-            max-height: 600px;
+        .api-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .api-button:active {
+            transform: translateY(0);
+        }
+
+        #dataDisplay {
+            margin-top: 30px;
+            display: none;
+        }
+
+        #dataDisplay.show {
+            display: block;
+        }
+
+        .data-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px 8px 0 0;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .data-content {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 0 0 8px 8px;
+            max-height: 500px;
             overflow-y: auto;
         }
 
-        .leaderboard-row {
+        .stat-grid {
             display: grid;
-            grid-template-columns: 80px 1fr 120px 100px 100px 100px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
-            padding: 20px;
-            border-bottom: 1px solid #e0e0e0;
-            transition: background 0.2s;
-            align-items: center;
+            margin-bottom: 20px;
         }
 
-        .leaderboard-row:hover {
+        .stat-item {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .leaderboard-table th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+
+        .leaderboard-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .leaderboard-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .leaderboard-table tr:hover {
             background: #f5f5f5;
         }
 
-        .leaderboard-row:nth-child(1) {
-            background: linear-gradient(90deg, #ffd700 0%, #ffed4e 100%);
-            font-weight: bold;
-        }
-
-        .leaderboard-row:nth-child(2) {
-            background: linear-gradient(90deg, #c0c0c0 0%, #e8e8e8 100%);
-            font-weight: bold;
-        }
-
-        .leaderboard-row:nth-child(3) {
-            background: linear-gradient(90deg, #cd7f32 0%, #e8b88a 100%);
-            font-weight: bold;
-        }
-
         .rank {
-            font-size: 1.5em;
+            font-size: 1.3em;
             font-weight: bold;
             color: #667eea;
-            text-align: center;
         }
 
-        .leaderboard-row:nth-child(1) .rank {
-            color: #b8860b;
-            font-size: 2em;
-        }
-
-        .leaderboard-row:nth-child(2) .rank {
-            color: #708090;
-            font-size: 1.8em;
-        }
-
-        .leaderboard-row:nth-child(3) .rank {
-            color: #8b4513;
-            font-size: 1.6em;
-        }
-
-        .player-name {
-            font-weight: 600;
-            font-size: 1.1em;
-        }
-
-        .round-col, .games-col, .kills-col, .gems-col {
-            text-align: center;
-            font-weight: 500;
-        }
-
-        .round-value {
-            color: #667eea;
-            font-weight: bold;
-            font-size: 1.2em;
-        }
-
-        .loading, .error {
-            padding: 40px;
-            text-align: center;
-            font-size: 1.1em;
-        }
+        .rank.gold { color: #ffd700; }
+        .rank.silver { color: #c0c0c0; }
+        .rank.bronze { color: #cd7f32; }
 
         .loading {
+            text-align: center;
+            padding: 40px;
             color: #666;
+            font-size: 1.1em;
         }
 
         .error {
-            color: #d32f2f;
+            background: #ffebee;
+            color: #c62828;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #c62828;
+        }
+
+        .json-display {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+            margin-top: 30px;
+        }
+
+        .info-box h3 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .info-box p {
+            color: #555;
+            line-height: 1.6;
         }
 
         footer {
             text-align: center;
-            color: white;
             margin-top: 40px;
-            padding: 20px;
-            opacity: 0.9;
-        }
-
-        footer p {
-            margin: 5px 0;
+            color: #666;
+            font-size: 0.9em;
         }
 
         @media (max-width: 768px) {
+            .card {
+                padding: 30px 20px;
+            }
+
             header h1 {
                 font-size: 2em;
             }
 
-            header h2 {
-                font-size: 1.2em;
+            .button-group {
+                grid-template-columns: 1fr;
             }
-
-            .leaderboard-header,
-            .leaderboard-row {
-                grid-template-columns: 50px 1fr 80px 70px;
-                gap: 10px;
-                padding: 15px 10px;
-                font-size: 0.85em;
-            }
-
-            .kills-col, .gems-col {
-                display: none;
-            }
-
-            .stat-value {
-                font-size: 2em;
-            }
-
-            .stat-card {
-                padding: 20px;
-            }
-        }
-
-        .leaderboard-body::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        .leaderboard-body::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        .leaderboard-body::-webkit-scrollbar-thumb {
-            background: #667eea;
-            border-radius: 5px;
-        }
-
-        .leaderboard-body::-webkit-scrollbar-thumb:hover {
-            background: #764ba2;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>⚔️ Legion Mob Arena</h1>
-            <h2>Live Leaderboard</h2>
-        </header>
+        <div class="card">
+            <header>
+                <h1>⚔️ Legion Mob Arena</h1>
+                <p>Live Stats & Leaderboard API</p>
+            </header>
 
-        <div class="stats-summary" id="statsSummary">
-            <div class="stat-card">
-                <div class="stat-value" id="totalPlayers">-</div>
-                <div class="stat-label">Total Players</div>
+            <div class="api-links">
+                <h2>📊 View Live Stats</h2>
+
+                <div class="button-group">
+                    <button class="api-button" onclick="loadStats()">
+                        📈 Server Statistics
+                    </button>
+                    <button class="api-button" onclick="loadLeaderboard()">
+                        🏆 View Leaderboard
+                    </button>
+                    <button class="api-button" onclick="loadRawJSON()">
+                        📄 Raw JSON Data
+                    </button>
+                </div>
+
+                <div id="dataDisplay">
+                    <div class="data-header" id="dataHeader">Loading...</div>
+                    <div class="data-content" id="dataContent">
+                        <div class="loading">Loading data...</div>
+                    </div>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-value" id="totalGames">-</div>
-                <div class="stat-label">Games Played</div>
+
+            <div class="info-box">
+                <h3>ℹ️ How to Use</h3>
+                <p>
+                    <strong>Click the buttons above</strong> to view live stats and leaderboards from the server.
+                    Data updates in real-time as players complete games!
+                </p>
+                <p style="margin-top: 10px;">
+                    <strong>Server:</strong> BlazeKitchen MC<br>
+                    <strong>API:</strong> http://54.37.245.44:2001
+                </p>
             </div>
-            <div class="stat-card">
-                <div class="stat-value" id="totalKills">-</div>
-                <div class="stat-label">Total Kills</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="highestRound">-</div>
-                <div class="stat-label">Highest Round</div>
-            </div>
+
+            <footer>
+                <p>Legion Mob Arena Plugin • Stats update in real-time</p>
+            </footer>
         </div>
-
-        <div class="leaderboard-container">
-            <div class="leaderboard-header">
-                <div class="rank-col">Rank</div>
-                <div class="player-col">Player</div>
-                <div class="round-col">Best Round</div>
-                <div class="games-col">Games</div>
-                <div class="kills-col">Kills</div>
-                <div class="gems-col">Gems</div>
-            </div>
-            <div class="leaderboard-body" id="leaderboardBody">
-                <div class="loading">Loading leaderboard data...</div>
-            </div>
-        </div>
-
-        <footer>
-            <p>Last Updated: <span id="lastUpdated">-</span></p>
-            <p>Auto-refreshes every 60 seconds</p>
-        </footer>
     </div>
 
     <script>
         const API_BASE_URL = 'http://54.37.245.44:2001';
         const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
 
-        // Load data immediately on page load
-        window.addEventListener('DOMContentLoaded', () => {
-            loadData();
-        });
+        async function fetchAPI(endpoint) {
+            const url = `${CORS_PROXY}${encodeURIComponent(API_BASE_URL + endpoint)}`;
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Failed to fetch data');
+            return await response.json();
+        }
 
-        async function loadData() {
+        function showDisplay(title) {
+            const display = document.getElementById('dataDisplay');
+            const header = document.getElementById('dataHeader');
+            const content = document.getElementById('dataContent');
+
+            display.classList.add('show');
+            header.textContent = title;
+            content.innerHTML = '<div class="loading">Loading data...</div>';
+
+            // Scroll to display
+            display.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        async function loadStats() {
+            showDisplay('📈 Server Statistics');
+
             try {
-                // Fetch stats summary using CORS proxy
-                const statsUrl = `${CORS_PROXY}${encodeURIComponent(API_BASE_URL + '/api/stats')}`;
-                const statsResponse = await fetch(statsUrl);
-                if (!statsResponse.ok) throw new Error('Failed to fetch stats');
-                const stats = await statsResponse.json();
-                updateStatsSummary(stats);
+                const stats = await fetchAPI('/api/stats');
 
-                // Fetch leaderboard using CORS proxy
-                const leaderboardUrl = `${CORS_PROXY}${encodeURIComponent(API_BASE_URL + '/api/leaderboard')}`;
-                const leaderboardResponse = await fetch(leaderboardUrl);
-                if (!leaderboardResponse.ok) throw new Error('Failed to fetch leaderboard');
-                const leaderboard = await leaderboardResponse.json();
-                displayLeaderboard(leaderboard);
-
-                updateLastUpdated();
-            } catch (error) {
-                console.error('Error loading data:', error);
-                document.getElementById('leaderboardBody').innerHTML =
-                    '<div class="error">Failed to connect to server. The API may be offline or unreachable.</div>';
-            }
-        }
-
-        function updateStatsSummary(stats) {
-            document.getElementById('totalPlayers').textContent = stats.totalPlayers.toLocaleString();
-            document.getElementById('totalGames').textContent = stats.totalGames.toLocaleString();
-            document.getElementById('totalKills').textContent = stats.totalKills.toLocaleString();
-            document.getElementById('highestRound').textContent = stats.highestRound.toLocaleString();
-
-            // Update header with server name if available
-            if (stats.serverName) {
-                document.querySelector('header h1').textContent = `⚔️ ${stats.serverName}`;
-            }
-        }
-
-        function displayLeaderboard(players) {
-            const leaderboardBody = document.getElementById('leaderboardBody');
-
-            if (!players || players.length === 0) {
-                leaderboardBody.innerHTML = '<div class="loading">No players on the leaderboard yet! Be the first to play!</div>';
-                return;
-            }
-
-            let html = '';
-            players.forEach((player, index) => {
-                html += `
-                    <div class="leaderboard-row">
-                        <div class="rank">${getRankDisplay(index + 1)}</div>
-                        <div class="player-name">${escapeHtml(player.playerName)}</div>
-                        <div class="round-col"><span class="round-value">${player.highestRound}</span></div>
-                        <div class="games-col">${player.totalGamesPlayed.toLocaleString()}</div>
-                        <div class="kills-col">${player.totalKills.toLocaleString()}</div>
-                        <div class="gems-col">${player.totalGemsEarned.toLocaleString()}</div>
+                const content = document.getElementById('dataContent');
+                content.innerHTML = `
+                    <div class="stat-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">${stats.totalPlayers.toLocaleString()}</div>
+                            <div class="stat-label">Total Players</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${stats.totalGames.toLocaleString()}</div>
+                            <div class="stat-label">Games Played</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${stats.totalKills.toLocaleString()}</div>
+                            <div class="stat-label">Total Kills</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${stats.highestRound.toLocaleString()}</div>
+                            <div class="stat-label">Highest Round</div>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 20px; color: #666;">
+                        <p><strong>Server:</strong> ${stats.serverName}</p>
+                        <p style="margin-top: 5px; font-size: 0.9em;">Last updated: ${new Date(stats.timestamp).toLocaleString()}</p>
                     </div>
                 `;
-            });
-
-            leaderboardBody.innerHTML = html;
+            } catch (error) {
+                document.getElementById('dataContent').innerHTML =
+                    '<div class="error">Failed to load stats. The server may be offline.</div>';
+            }
         }
 
-        function getRankDisplay(rank) {
-            if (rank === 1) return '🥇';
-            if (rank === 2) return '🥈';
-            if (rank === 3) return '🥉';
-            return `#${rank}`;
+        async function loadLeaderboard() {
+            showDisplay('🏆 Leaderboard');
+
+            try {
+                const players = await fetchAPI('/api/leaderboard');
+
+                const content = document.getElementById('dataContent');
+
+                if (!players || players.length === 0) {
+                    content.innerHTML = '<div class="loading">No players on the leaderboard yet! Be the first to play!</div>';
+                    return;
+                }
+
+                let tableHTML = `
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">Rank</th>
+                                <th>Player</th>
+                                <th style="text-align: center;">Best Round</th>
+                                <th style="text-align: center;">Games</th>
+                                <th style="text-align: center;">Kills</th>
+                                <th style="text-align: center;">Gems</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                players.forEach((player, index) => {
+                    const rank = index + 1;
+                    let rankClass = '';
+                    let rankDisplay = `#${rank}`;
+
+                    if (rank === 1) { rankClass = 'gold'; rankDisplay = '🥇'; }
+                    else if (rank === 2) { rankClass = 'silver'; rankDisplay = '🥈'; }
+                    else if (rank === 3) { rankClass = 'bronze'; rankDisplay = '🥉'; }
+
+                    tableHTML += `
+                        <tr>
+                            <td><span class="rank ${rankClass}">${rankDisplay}</span></td>
+                            <td><strong>${escapeHtml(player.playerName)}</strong></td>
+                            <td style="text-align: center;"><strong style="color: #667eea; font-size: 1.2em;">${player.highestRound}</strong></td>
+                            <td style="text-align: center;">${player.totalGamesPlayed.toLocaleString()}</td>
+                            <td style="text-align: center;">${player.totalKills.toLocaleString()}</td>
+                            <td style="text-align: center;">${player.totalGemsEarned.toLocaleString()}</td>
+                        </tr>
+                    `;
+                });
+
+                tableHTML += '</tbody></table>';
+                content.innerHTML = tableHTML;
+
+            } catch (error) {
+                document.getElementById('dataContent').innerHTML =
+                    '<div class="error">Failed to load leaderboard. The server may be offline.</div>';
+            }
+        }
+
+        async function loadRawJSON() {
+            showDisplay('📄 Raw JSON Data');
+
+            try {
+                const stats = await fetchAPI('/api/stats');
+                const leaderboard = await fetchAPI('/api/leaderboard');
+
+                const data = {
+                    stats: stats,
+                    leaderboard: leaderboard
+                };
+
+                const content = document.getElementById('dataContent');
+                content.innerHTML = `<div class="json-display">${JSON.stringify(data, null, 2)}</div>`;
+
+            } catch (error) {
+                document.getElementById('dataContent').innerHTML =
+                    '<div class="error">Failed to load data. The server may be offline.</div>';
+            }
         }
 
         function escapeHtml(text) {
@@ -373,24 +446,6 @@
             div.textContent = text;
             return div.innerHTML;
         }
-
-        function updateLastUpdated() {
-            const now = new Date();
-            const formatted = now.toLocaleString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
-            document.getElementById('lastUpdated').textContent = formatted;
-        }
-
-        // Auto-refresh every 60 seconds
-        setInterval(() => {
-            loadData();
-        }, 60000);
     </script>
 </body>
 </html>
