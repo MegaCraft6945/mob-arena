@@ -360,14 +360,19 @@
             if (!apiBaseUrl) return;
 
             try {
+                // Use CORS proxy to bypass mixed content restrictions
+                const corsProxy = 'https://api.allorigins.win/raw?url=';
+
                 // Fetch stats summary
-                const statsResponse = await fetch(`${apiBaseUrl}/api/stats`);
+                const statsUrl = `${corsProxy}${encodeURIComponent(apiBaseUrl + '/api/stats')}`;
+                const statsResponse = await fetch(statsUrl);
                 if (!statsResponse.ok) throw new Error('Failed to fetch stats');
                 const stats = await statsResponse.json();
                 updateStatsSummary(stats);
 
                 // Fetch leaderboard
-                const leaderboardResponse = await fetch(`${apiBaseUrl}/api/leaderboard`);
+                const leaderboardUrl = `${corsProxy}${encodeURIComponent(apiBaseUrl + '/api/leaderboard')}`;
+                const leaderboardResponse = await fetch(leaderboardUrl);
                 if (!leaderboardResponse.ok) throw new Error('Failed to fetch leaderboard');
                 const leaderboard = await leaderboardResponse.json();
                 displayLeaderboard(leaderboard);
