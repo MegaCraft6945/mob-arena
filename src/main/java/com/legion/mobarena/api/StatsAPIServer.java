@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Embedded HTTP server that exposes leaderboard data via REST API
@@ -101,7 +102,7 @@ public class StatsAPIServer {
      */
     private void getStats(Context ctx) {
         // Fetch from database asynchronously
-        ctx.future(() -> {
+        ctx.future(() -> CompletableFuture.supplyAsync(() -> {
             List<PlayerData> allData = plugin.getPlayerDataManager().getAllPlayerDataFromDatabase();
 
             Map<String, Object> stats = new HashMap<>();
@@ -120,7 +121,7 @@ public class StatsAPIServer {
             stats.put("timestamp", System.currentTimeMillis());
 
             return stats;
-        });
+        }));
     }
 
     /**
@@ -128,7 +129,7 @@ public class StatsAPIServer {
      */
     private void getLeaderboard(Context ctx) {
         // Fetch from database asynchronously
-        ctx.future(() -> {
+        ctx.future(() -> CompletableFuture.supplyAsync(() -> {
             List<PlayerData> allData = plugin.getPlayerDataManager().getAllPlayerDataFromDatabase();
             List<Map<String, Object>> leaderboard = new ArrayList<>();
 
@@ -165,7 +166,7 @@ public class StatsAPIServer {
             });
 
             return leaderboard;
-        });
+        }));
     }
 
     /**
@@ -174,7 +175,7 @@ public class StatsAPIServer {
     private void getPlayerStats(Context ctx) {
         String uuidStr = ctx.pathParam("uuid");
 
-        ctx.future(() -> {
+        ctx.future(() -> CompletableFuture.supplyAsync(() -> {
             try {
                 UUID uuid = UUID.fromString(uuidStr);
 
@@ -217,6 +218,6 @@ public class StatsAPIServer {
                 ctx.status(400).json(Map.of("error", "Invalid UUID format"));
                 return null;
             }
-        });
+        }));
     }
 }
