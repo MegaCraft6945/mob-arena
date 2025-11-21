@@ -245,4 +245,64 @@ public class PlayerDataManager {
     public Map<UUID, PlayerData> getAllPlayerData() {
         return new HashMap<>(playerDataCache);
     }
+
+    public void resetAllStats() {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try {
+                Connection conn = plugin.getDatabaseManager().getConnection();
+                if (conn == null) return;
+
+                // Delete all player kits
+                PreparedStatement ps = conn.prepareStatement("DELETE FROM player_kits");
+                ps.executeUpdate();
+                ps.close();
+
+                // Delete all player data
+                ps = conn.prepareStatement("DELETE FROM player_data");
+                ps.executeUpdate();
+                ps.close();
+
+                // Clear cache on main thread
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    playerDataCache.clear();
+                    plugin.getLogger().info("All player statistics have been reset!");
+                });
+
+            } catch (SQLException e) {
+                plugin.getLogger().severe("Error resetting all player stats");
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void resetPlayerStats(UUID uuid) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try {
+                Connection conn = plugin.getDatabaseManager().getConnection();
+                if (conn == null) return;
+
+                // Delete player kits
+                PreparedStatement ps = conn.prepareStatement("DELETE FROM player_kits WHERE uuid = ?");
+                ps.setString(1, uuid.toString());
+                ps.executeUpdate();
+                ps.close();
+
+                // Delete player data
+                ps = conn.prepareStatement("DELETE FROM player_data WHERE uuid = ?");
+                ps.setString(1, uuid.toString());
+                ps.executeUpdate();
+                ps.close();
+
+                // Clear from cache on main thread
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    playerDataCache.remove(uuid);
+                    plugin.getLogger().info("Reset stats for player UUID: " + uuid);
+                });
+
+            } catch (SQLException e) {
+                plugin.getLogger().severe("Error resetting player stats for " + uuid);
+                e.printStackTrace();
+            }
+        });
+    }
 }
